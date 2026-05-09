@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nilus </title>
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+font-family: 'Open Sans', sans-serif;
+background: #fff;
+color: #00344D;
+overflow-x: hidden;
+}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #CBDB2A; }
+input, textarea, select {
+-webkit-appearance: none;
+border-radius: 0;
+font-family: inherit;
+}
+
+/* ── TOKENS ── */
+:root {
+--navy: #00344D;
+--navy-light: #004466;
+--navy-dark: #001f2e;
+--lime: #CBDB2A;
+--lime-dark: #aab820;
+--white: #ffffff;
+--off-white: #f7f8f4;
+--gray: #8a9aaa;
+--text-light: #c8d8e4;
+--muted: #3a5a6a;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+from { opacity: 0; transform: translateY(18px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+from { opacity: 0; }
+to { opacity: 1; }
+}
+.fade-in { animation: fadeIn .4s ease both; }
+.fade-up { animation: fadeUp .55s ease both; }
+.fade-up2 { animation: fadeUp .55s .1s ease both; }
+.fade-up3 { animation: fadeUp .55s .2s ease both; }
+.fade-up4 { animation: fadeUp .55s .3s ease both; }
+
+/* ── NAV ── */
+nav#main-nav {
+position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+height: 64px;
+display: flex; align-items: center; justify-content: space-between;
+padding: 0 5vw;
+background: rgba(0,52,77,0.95);
+backdrop-filter: blur(12px);
+border-bottom: 1px solid rgba(203,219,42,0.12);
+transition: background 0.3s;
+}
+nav#main-nav.scrolled { background: rgba(0,15,24,0.98); }
+nav#main-nav.menu-open { background: rgba(0,15,24,0.98); }
+
+.nav-logo { cursor: pointer; line-height: 1; }
+.nav-logo .wordmark {
+font-size: 1.45rem; font-weight: 700;
+color: var(--white); letter-spacing: -0.03em;
+}
+.nav-logo .wordmark span { color: var(--lime); }
+.nav-logo .sub {
+font-size: 0.44rem; letter-spacing: 0.22em;
+text-transform: uppercase; color: var(--text-light); margin-top: 2px;
+}
+
+.nav-desktop { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+.nav-desktop li button {
+background: none; border: none; cursor: pointer;
+font-family: inherit; font-size: 0.66rem; letter-spacing: 0.12em;
+text-transform: uppercase; color: var(--text-light);
+border-bottom: 1px solid transparent; padding-bottom: 2px;
+transition: color 0.2s;
+}
+.nav-desktop li button:hover { color: var(--lime); }
+.nav-desktop li button.active {
+color: var(--lime); font-weight: 700;
+border-bottom-color: var(--lime);
+}
+
+.nav-right { display: flex; align-items: center; gap: 0.8rem; }
+
+/* Lang toggle */
+.lang-toggle {
+display: flex; align-items: center;
+border: 1px solid rgba(203,219,42,0.3); overflow: hidden;
+}
+.lang-toggle button {
+background: transparent; color: var(--text-light);
+font-family: inherit; font-size: 0.6rem; font-weight: 700;
+letter-spacing: 0.1em; text-transform: uppercase;
+border: none; padding: 0.35rem 0.7rem; cursor: pointer;
+transition: all 0.2s;
+}
+.lang-toggle button.active { background: var(--lime); color: var(--navy-dark); }
+
+/* Hamburger */
+.hamburger {
+display: none; flex-direction: column; gap: 5px;
+align-items: center; justify-content: center;
+background: none; border: none; cursor: pointer;
+width: 38px; height: 38px; padding: 4px;
+}
+.hamburger span {
+display: block; width: 22px; height: 2px;
+background: var(--white); border-radius: 2px;
+transition: all 0.25s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile menu */
+#mobile-menu {
+position: fixed; top: 64px; left: 0; right: 0; bottom: 0;
+z-index: 190; background: var(--navy-dark);
+display: flex; flex-direction: column;
+justify-content: center; align-items: center; gap: 0.25rem;
+transform: translateX(100%);
+transition: transform 0.33s cubic-bezier(0.4,0,0.2,1);
+}
+#mobile-menu.open { transform: translateX(0); }
+#mobile-menu .mob-dot {
+position: absolute; width: 220px; height: 220px; border-radius: 50%;
+background: var(--lime); opacity: 0.05; right: -50px; bottom: -30px;
+pointer-events: none;
+}
+#mobile-menu button {
+background: none; border: none; cursor: pointer;
+font-family: inherit; font-size: 1.4rem; font-weight: 700;
+color: var(--white); padding: 0.5rem 2rem; transition: color 0.2s;
+}
+#mobile-menu button:hover, #mobile-menu button.active { color: var(--lime); }
+.mob-cta-wrap { margin-top: 1.2rem; }
+
+/* Get in Touch btn */
+.btn-primary {
+font-family: inherit; font-size: 0.68rem; font-weight: 700;
+letter-spacing: 0.12em; text-transform: uppercase;
+background: var(--lime); color: var(--navy-dark);
+border: none; padding: 0.85rem 1.6rem; cursor: pointer;
+transition: background 0.2s;
+}
+.btn-primary:hover { background: var(--lime-dark); }
+.btn-primary.sm { font-size: 0.62rem; padding: 0.5rem 1.1rem; }
+
+.btn-ghost {
+font-family: inherit; font-size: 0.68rem; font-weight: 700;
+letter-spacing: 0.12em; text-transform: uppercase;
+background: transparent; color: var(--text-light);
+border: 1px solid rgba(200,216,228,0.3);
+padding: 0.85rem 1.6rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-ghost:hover { color: var(--lime); border-color: var(--lime); }
+
+.btn-ghost-dark {
+font-family: inherit; font-size: 0.68rem; font-weight: 700;
+letter-spacing: 0.12em; text-transform: uppercase;
+background: transparent; color: var(--navy);
+border: 1px solid rgba(0,52,77,0.22);
+padding: 0.85rem 1.6rem; cursor: pointer; transition: all 0.2s;
+}
+.btn-ghost-dark:hover { color: var(--lime); border-color: var(--lime); }
+
+.btn-dark {
+font-family: inherit; font-size: 0.68rem; font-weight: 700;
+letter-spacing: 0.12em; text-transform: uppercase;
+background: var(--navy-dark); color: var(--white);
+border: none; padding: 0.85rem 1.6rem; cursor: pointer; transition: background 0.2s;
+}
+.btn-dark:hover { background: var(--navy); }
+
+/* ── PAGES ── */
+.page { display: none; padding-top: 64px; min-height: 100vh; }
+.page.active { display: block; }
+
+/* ── EYEBROW ── */
+.eyebrow {
+font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.8rem;
+}
+.eyebrow::before {
+content: ''; display: block; width: 1.4rem; height: 1px;
+background: currentColor; flex-shrink: 0;
+}
+.eyebrow.light { color: var(--lime); }
+.eyebrow.dark { color: rgba(0,52,77,0.4); }
+
+/* ── SECTION TITLE ── */
+.h2 {
+font-size: clamp(1.6rem, 3vw, 2.4rem);
+font-weight: 700; letter-spacing: -0.03em; line-height: 1.1;
+}
+.h2.light { color: var(--white); }
+.h2.navy { color: var(--navy); }
+
+/* ── INNER HERO ── */
+.inner-hero {
+background: var(--navy-dark);
+padding: 4.5rem 8vw 3.5rem;
+position: relative; overflow: hidden;
+}
+.inner-hero::before {
+content: '';
+position: absolute; inset: 0;
+background: radial-gradient(ellipse 55% 90% at 80% 50%, rgba(0,68,102,0.45) 0%, transparent 70%);
+pointer-events: none;
+}
+.inner-hero-content { position: relative; z-index: 1; max-width: 700px; }
+.inner-hero h1 {
+font-size: clamp(1.8rem,3.5vw,2.8rem); font-weight: 700;
+color: var(--white); letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 0.9rem;
+}
+.inner-hero p { font-size: 0.9rem; color: var(--text-light); line-height: 1.75; font-weight: 300; }
+
+/* ── HOME HERO ── */
+.home-hero {
+min-height: 100vh; background: var(--navy-dark);
+display: grid; grid-template-columns: 1fr 1fr;
+position: relative; overflow: hidden;
+}
+.home-hero-bg {
+position: absolute; inset: 0;
+background: radial-gradient(ellipse 55% 75% at 65% 50%, rgba(0,68,102,0.55) 0%, transparent 70%);
+pointer-events: none;
+}
+.home-hero-dot {
+position: absolute; width: 260px; height: 260px; border-radius: 50%;
+background: var(--lime); opacity: 0.05; right: -40px; top: -60px; pointer-events: none;
+}
+.home-hero-left {
+display: flex; flex-direction: column; justify-content: center;
+padding: 9rem 4vw 5rem 8vw; position: relative; z-index: 1;
+}
+.home-hero-left h1 {
+font-size: clamp(2.3rem,4.2vw,3.8rem); font-weight: 700;
+color: var(--white); line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 1.4rem;
+}
+.home-hero-left h1 .lime { color: var(--lime); }
+.home-hero-left p {
+font-size: 0.95rem; color: var(--text-light); line-height: 1.75;
+max-width: 420px; font-weight: 300; margin-bottom: 2.2rem;
+}
+.hero-btns { display: flex; gap: 0.9rem; flex-wrap: wrap; }
+
+.home-hero-right {
+display: flex; flex-direction: column; justify-content: flex-end;
+padding: 9rem 7vw 5rem 2vw; position: relative; z-index: 1;
+}
+.stat-block { border-top: 1px solid rgba(200,216,228,0.11); padding-top: 1.3rem; margin-bottom: 1.6rem; }
+.stat-num { font-size: 2.4rem; font-weight: 700; color: var(--white); letter-spacing: -0.04em; line-height: 1; }
+.stat-num span { color: var(--lime); }
+.stat-label { font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gray); margin-top: 0.35rem; }
+
+.hero-wave {
+position: absolute; bottom: -1px; left: 0; width: 100%; opacity: 0.07; pointer-events: none;
+}
+
+/* ── ABOUT TEASER ── */
+.about-teaser {
+background: var(--off-white); padding: 6rem 8vw;
+}
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.about-cards { display: flex; flex-direction: column; gap: 1rem; }
+.about-card {
+background: var(--white); border-left: 3px solid var(--lime); padding: 1.2rem 1.4rem;
+}
+.about-card h4 {
+font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+color: var(--navy); margin-bottom: 0.4rem; font-weight: 700;
+}
+.about-card p { font-size: 0.8rem; line-height: 1.65; color: #5a7a8a; }
+
+/* ── SERVICES TEASER ── */
+.services-teaser { background: var(--navy); padding: 6rem 8vw; }
+.services-header {
+display: flex; justify-content: space-between; align-items: flex-end;
+gap: 1rem; margin-bottom: 2.5rem;
+border-bottom: 1px solid rgba(200,216,228,0.09); padding-bottom: 2rem;
+}
+.services-header p { max-width: 340px; font-size: 0.86rem; line-height: 1.7; color: var(--text-light); font-weight: 300; }
+.svc-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: rgba(200,216,228,0.09); }
+.svc-card {
+background: var(--navy); padding: 2rem 1.6rem; cursor: pointer; transition: background 0.2s;
+}
+.svc-card:hover { background: var(--navy-light); }
+.svc-n { font-size: 0.56rem; letter-spacing: 0.18em; color: var(--lime); margin-bottom: 0.8rem; font-weight: 700; }
+.svc-h { font-size: 0.92rem; font-weight: 700; color: var(--white); margin-bottom: 0.55rem; line-height: 1.25; }
+.svc-d { font-size: 0.76rem; line-height: 1.7; color: var(--text-light); opacity: 0.75; font-weight: 300; }
+.svc-view-all { margin-top: 1.5rem; text-align: right; }
+
+/* ── CTA STRIP ── */
+.cta-strip {
+background: var(--lime); padding: 3.5rem 8vw;
+display: flex; justify-content: space-between; align-items: center; gap: 1.2rem;
+}
+.cta-eyebrow {
+font-size: 0.58rem; letter-spacing: 0.18em; text-transform: uppercase;
+color: rgba(0,31,46,0.45); margin-bottom: 0.35rem;
+}
+.cta-title { font-size: clamp(1.2rem,2.5vw,1.7rem); font-weight: 700; color: var(--navy-dark); letter-spacing: -0.02em; }
+.cta-btns { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+
+/* ── ABOUT PAGE ── */
+.about-story { padding: 6rem 8vw; }
+.quote-box {
+background: var(--navy-dark); padding: 2rem; position: relative; overflow: hidden;
+}
+.quote-box::before {
+content: ''; position: absolute; width: 140px; height: 140px; border-radius: 50%;
+background: var(--lime); opacity: 0.07; right: -15px; top: -15px;
+}
+.quote-box blockquote {
+font-size: 1rem; font-weight: 300; color: var(--white);
+line-height: 1.8; font-style: italic; position: relative; z-index: 1;
+}
+.quote-line { width: 1.6rem; height: 2px; background: var(--lime); margin-top: 1.2rem; }
+
+.principles { background: var(--off-white); padding: 6rem 8vw; }
+.principles-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin-top: 2rem; }
+.principle-card { background: var(--white); padding: 1.5rem; border-top: 2px solid var(--lime); }
+.principle-card h4 { font-size: 0.8rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+.principle-card p { font-size: 0.78rem; line-height: 1.7; color: #5a7a8a; }
+
+.coverage { background: var(--navy); padding: 5rem 8vw; }
+.coverage-inner { display: flex; gap: 4rem; align-items: center; flex-wrap: wrap; }
+.coverage-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.tag {
+font-size: 0.62rem; letter-spacing: 0.09em; text-transform: uppercase; font-weight: 600;
+color: var(--white); background: transparent;
+border: 1px solid rgba(200,216,228,0.18); padding: 0.44rem 0.8rem;
+}
+.tag.hi { color: var(--navy-dark); background: var(--lime); border-color: var(--lime); }
+
+.about-cta {
+padding: 4.5rem 8vw; display: flex;
+justify-content: space-between; align-items: center; gap: 1.2rem;
+}
+
+/* ── SERVICES PAGE ── */
+.services-list { padding: 5rem 8vw; }
+.svc-row {
+display: grid; grid-template-columns: 64px 1fr auto;
+gap: 1.8rem; align-items: start;
+padding: 2rem 0; border-bottom: 1px solid rgba(0,52,77,0.07);
+}
+.svc-row-n { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.16em; color: var(--lime); padding-top: 0.2rem; }
+.svc-row h3 { font-size: 0.98rem; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; margin-bottom: 0.5rem; }
+.svc-row p { font-size: 0.82rem; line-height: 1.75; color: var(--muted); }
+.svc-tags { display: flex; flex-direction: column; gap: 0.3rem; align-items: flex-end; }
+.svc-tag {
+font-size: 0.56rem; letter-spacing: 0.09em; text-transform: uppercase;
+color: var(--gray); border: 1px solid rgba(0,52,77,0.13); padding: 0.25rem 0.5rem; white-space: nowrap;
+}
+
+.approach { background: var(--off-white); padding: 5rem 8vw; }
+.steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(0,52,77,0.07); margin-top: 2rem; }
+.step-card { background: var(--off-white); padding: 1.8rem 1.5rem; }
+.step-card:first-child { border-left: 3px solid var(--lime); }
+.step-n { font-size: 0.56rem; font-weight: 700; letter-spacing: 0.14em; color: var(--lime); margin-bottom: 0.6rem; }
+.step-card h4 { font-size: 0.82rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+.step-card p { font-size: 0.76rem; line-height: 1.7; color: #5a7a8a; }
+
+.services-cta {
+padding: 3.5rem 8vw; display: flex;
+justify-content: space-between; align-items: center; gap: 1.2rem;
+}
+.services-cta p { font-size: 0.92rem; color: var(--muted); max-width: 480px; }
+
+/* ── TEAM PAGE ── */
+.team-intro { padding: 5.5rem 8vw; }
+.team-lead { max-width: 640px; margin-bottom: 2.5rem; }
+.team-lead p { font-size: 0.9rem; line-height: 1.85; color: var(--muted); }
+.roles-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.2rem; }
+.role-card { background: var(--off-white); padding: 1.8rem; border-top: 2px solid var(--lime); }
+.role-spec { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lime); font-weight: 700; margin-bottom: 0.3rem; }
+.role-card h3 { font-size: 1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.8rem; }
+.role-card p { font-size: 0.8rem; line-height: 1.75; color: var(--muted); margin-bottom: 1rem; }
+.role-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.role-tag {
+font-size: 0.58rem; letter-spacing: 0.08em; text-transform: uppercase;
+color: var(--navy); border: 1px solid rgba(0,52,77,0.18); padding: 0.28rem 0.5rem;
+}
+
+.team-model { background: var(--navy); padding: 5rem 8vw; }
+.team-model-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.team-model h2 { margin-bottom: 1.2rem; }
+.team-model p { font-size: 0.88rem; line-height: 1.8; color: var(--text-light); font-weight: 300; margin-bottom: 1.2rem; }
+.disciplines { display: flex; flex-direction: column; gap: 1px; background: rgba(200,216,228,0.09); }
+.discipline {
+background: var(--navy); padding: 1.1rem 1.4rem;
+display: flex; align-items: center; gap: 0.9rem;
+}
+.discipline::before {
+content: ''; display: block; width: 5px; height: 5px;
+border-radius: 50%; background: var(--lime); flex-shrink: 0;
+}
+.discipline span { font-size: 0.82rem; color: var(--text-light); }
+
+/* ── INSIGHTS PAGE ── */
+.newsletter-strip { background: var(--lime); padding: 4.5rem 8vw; }
+.newsletter-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.newsletter-label {
+font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+color: rgba(0,31,46,0.4); margin-bottom: 0.6rem;
+}
+.newsletter-strip h2 {
+font-size: clamp(1.4rem,2.5vw,1.9rem); font-weight: 700;
+color: var(--navy-dark); letter-spacing: -0.03em; margin-bottom: 0.7rem;
+}
+.newsletter-strip p { font-size: 0.85rem; line-height: 1.75; color: rgba(0,31,46,0.65); margin-bottom: 1rem; }
+.newsletter-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.newsletter-tag {
+font-size: 0.58rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+color: var(--navy-dark); background: rgba(0,31,46,0.09); padding: 0.28rem 0.6rem;
+}
+.subscribe-form { display: flex; }
+.subscribe-form input {
+flex: 1; background: var(--white); border: none; outline: none;
+font-size: 0.88rem; padding: 0.9rem 1rem; color: var(--navy); min-width: 0;
+}
+.subscribe-form button {
+background: var(--navy-dark); color: var(--white); font-family: inherit;
+font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+border: none; padding: 0.9rem 1.2rem; cursor: pointer; white-space: nowrap;
+transition: background 0.2s;
+}
+.subscribe-form button:hover { background: var(--navy); }
+.subscribe-note { font-size: 0.65rem; color: rgba(0,31,46,0.45); margin-top: 0.7rem; margin-bottom: 0; }
+.subscribe-result { display: none; margin-top: 0.5rem; font-size: 0.82rem; font-weight: 700; font-style: italic; color: var(--navy-dark); line-height: 1.4; }
+
+.articles-section { padding: 5rem 8vw; }
+.articles-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.5rem; margin-top: 2rem; }
+.article-card { border-top: 2px solid var(--lime); padding-top: 1.4rem; }
+.article-cat { font-size: 0.56rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--lime); font-weight: 700; margin-bottom: 0.6rem; }
+.article-card h3 { font-size: 0.9rem; font-weight: 700; color: var(--navy); line-height: 1.4; margin-bottom: 0.9rem; }
+.article-soon { font-size: 0.62rem; letter-spacing: 0.07em; color: var(--gray); text-transform: uppercase; }
+.articles-note { margin-top: 2.5rem; padding: 2.5rem; background: var(--off-white); text-align: center; }
+.articles-note p { font-size: 0.85rem; color: var(--muted); }
+
+/* ── CONTACT PAGE ── */
+.contact-page { background: var(--navy-dark); }
+.contact-header {
+padding: 4.5rem 8vw 2.5rem;
+border-bottom: 1px solid rgba(200,216,228,0.07);
+}
+.contact-header h1 {
+font-size: clamp(1.9rem,3.8vw,2.8rem); font-weight: 700;
+color: var(--white); letter-spacing: -0.03em; line-height: 1.1;
+}
+.contact-body { padding: 3.5rem 8vw 5.5rem; }
+.contact-grid { display: grid; grid-template-columns: 1fr 1.35fr; gap: 5.5rem; align-items: start; }
+.contact-left p { font-size: 0.9rem; line-height: 1.8; color: var(--text-light); font-weight: 300; margin-bottom: 2rem; }
+.contact-detail { border-bottom: 1px solid rgba(200,216,228,0.07); padding-bottom: 0.9rem; margin-bottom: 0.9rem; }
+.contact-detail-label { font-size: 0.54rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray); margin-bottom: 0.22rem; }
+.contact-detail-value { font-size: 0.84rem; color: var(--text-light); }
+
+.contact-form { display: flex; flex-direction: column; gap: 0.85rem; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+.form-group { display: flex; flex-direction: column; }
+.form-label {
+font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase;
+color: var(--gray); font-weight: 600; margin-bottom: 0.3rem;
+}
+.form-input {
+background: rgba(255,255,255,0.05); border: 1px solid rgba(200,216,228,0.14);
+color: var(--white); font-size: 0.84rem; padding: 0.82rem 0.88rem; outline: none; width: 100%;
+transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--lime); }
+.form-input option { background: var(--navy-dark); }
+.form-success {
+padding: 2.5rem; background: rgba(203,219,42,0.07);
+border: 1px solid rgba(203,219,42,0.18); display: none;
+}
+.form-success.visible { display: block; }
+.form-success-check { font-size: 1.4rem; color: var(--lime); margin-bottom: 0.7rem; }
+.form-success h3 { font-size: 1rem; font-weight: 700; color: var(--white); margin-bottom: 0.6rem; }
+.form-success p { font-size: 0.84rem; color: var(--text-light); line-height: 1.7; }
+
+/* ── FOOTER ── */
+footer {
+background: #000e17;
+border-top: 1px solid rgba(200,216,228,0.05);
+padding: 2.8rem 8vw;
+}
+.footer-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2.8rem; margin-bottom: 1.8rem; }
+.footer-logo { cursor: pointer; margin-bottom: 0.8rem; line-height: 1; }
+.footer-logo .wordmark { font-size: 1rem; font-weight: 700; color: var(--white); letter-spacing: -0.03em; }
+.footer-logo .wordmark span { color: var(--lime); }
+.footer-logo .sub { font-size: 0.38rem; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gray); margin-top: 2px; }
+.footer-tagline { font-size: 0.74rem; color: rgba(138,154,170,0.5); line-height: 1.7; max-width: 200px; }
+.footer-col-title {
+font-size: 0.56rem; letter-spacing: 0.16em; text-transform: uppercase;
+color: var(--gray); margin-bottom: 0.8rem; font-weight: 600;
+}
+.footer-nav { display: flex; flex-direction: column; gap: 0.5rem; }
+.footer-nav button {
+background: none; border: none; cursor: pointer; font-family: inherit;
+font-size: 0.76rem; color: rgba(138,154,170,0.6); text-align: left; padding: 0;
+transition: color 0.2s;
+}
+.footer-nav button:hover { color: var(--lime); }
+.footer-contact-item { font-size: 0.74rem; color: rgba(138,154,170,0.5); margin-bottom: 0.42rem; }
+.footer-bottom {
+border-top: 1px solid rgba(200,216,228,0.05); padding-top: 1.2rem;
+display: flex; justify-content: space-between; align-items: center;
+}
+.footer-copy { font-size: 0.6rem; color: rgba(138,154,170,0.28); }
+
+/* ── UTILITIES ── */
+.flex-row { display: flex; gap: 0.7rem; flex-wrap: wrap; }
+.mt-auto { margin-top: auto; }
+.text-right { text-align: right; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 800px) {
+.nav-desktop, .nav-right { display: none !important; }
+.hamburger { display: flex !important; }
+.nav-mob-right { display: flex !important; }
+
+.home-hero { grid-template-columns: 1fr; }
+.home-hero-left { padding: 6.5rem 6vw 4.5rem; }
+.home-hero-right { display: none; }
+
+.inner-hero { padding: 3.5rem 6vw 2.8rem; }
+
+.two-col, .about-story .two-col, .team-model-inner,
+.contact-grid, .newsletter-inner { grid-template-columns: 1fr; gap: 2rem; }
+
+.services-header { flex-direction: column; align-items: flex-start; }
+.svc-grid, .articles-grid { grid-template-columns: 1fr; }
+.principles-grid { grid-template-columns: 1fr; }
+.roles-grid { grid-template-columns: 1fr; }
+.steps-grid { grid-template-columns: 1fr 1fr; }
+.footer-grid { grid-template-columns: 1fr; gap: 1.8rem; }
+.footer-bottom { flex-direction: column; gap: 0.4rem; align-items: flex-start; }
+
+.svc-row { grid-template-columns: 40px 1fr; gap: 0.9rem; }
+.svc-tags { display: none; }
+
+.about-teaser, .services-teaser, .about-story, .principles,
+.coverage, .services-list, .approach, .team-intro, .team-model,
+.newsletter-strip, .articles-section { padding-left: 6vw; padding-right: 6vw; }
+
+.cta-strip { flex-direction: column; align-items: flex-start; }
+.about-cta, .services-cta { flex-direction: column; align-items: flex-start; }
+
+.svc-view-all { text-align: left; }
+.contact-grid { gap: 2.5rem; }
+.contact-header, .contact-body { padding-left: 6vw; padding-right: 6vw; }
+}
+
+@media (max-width: 500px) {
+.steps-grid { grid-template-columns: 1fr; }
+.form-row { grid-template-columns: 1fr; }
+}
+
+/* Nav mobile right group */
+.nav-mob-right {
+display: none;
+align-items: center;
+gap: 0.7rem;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+.navbar-brand {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+/* iOS auto-link fix */
+a[href^="tel"],
+a[href^="mailto"] {
+color: inherit !important;
+text-decoration: none !important;
+}
+
+
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+NAV
+══════════════════════════════════════════════ -->
+
+<nav id="main-nav">
+<div class="nav-logo" onclick="goTo('home')">
+<img src="logo-nilus.png" style="height:54px; width:auto; display:block;" />
+<div class="sub"></div>
+</div>
+
+<!-- Desktop links -->
+
+<ul class="nav-desktop" id="nav-links">
+<li><button onclick="goTo('about')" data-page="about">About</button></li>
+<li><button onclick="goTo('services')"data-page="services">Services</button></li>
+<li><button onclick="goTo('team')" data-page="team">Team</button></li>
+<li><button onclick="goTo('insights')"data-page="insights">Insights</button></li>
+<li><button onclick="goTo('contact')" data-page="contact">Contact</button></li>
+</ul>
+
+<!-- Desktop right -->
+
+<div class="nav-right" id="nav-right">
+<div class="lang-toggle">
+<button class="active" id="lang-en" onclick="setLang('en')">EN</button>
+<button id="lang-es" onclick="setLang('es')">ES</button>
+</div>
+<button class="btn-primary sm" onclick="goTo('contact')" data-i18n="getInTouch">Get in Touch</button>
+</div>
+
+<!-- Mobile right -->
+
+<div class="nav-mob-right">
+<div class="lang-toggle">
+<button class="active" id="lang-en-mob" onclick="setLang('en')">EN</button>
+<button id="lang-es-mob" onclick="setLang('es')">ES</button>
+</div>
+<button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+<span></span><span></span><span></span>
+</button>
+</div>
+</nav>
+
+<!-- Mobile menu -->
+
+<div id="mobile-menu">
+<div class="mob-dot"></div>
+<button onclick="goTo('home')" data-mob-page="home">Home</button>
+<button onclick="goTo('about')" data-mob-page="about">About</button>
+<button onclick="goTo('services')"data-mob-page="services">Services</button>
+<button onclick="goTo('team')" data-mob-page="team">Team</button>
+<button onclick="goTo('insights')"data-mob-page="insights">Insights</button>
+<button onclick="goTo('contact')" data-mob-page="contact">Contact</button>
+<div class="mob-cta-wrap">
+<button class="btn-primary" onclick="goTo('contact')" data-i18n="getInTouch">Get in Touch</button>
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+HOME PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page active" id="page-home">
+
+<!-- Hero -->
+
+<section class="home-hero">
+<div class="home-hero-bg"></div>
+<div class="home-hero-dot"></div>
+
+<div class="home-hero-left">
+<div class="eyebrow light fade-up" data-i18n="hero.eyebrow">Strategic Advisory</div>
+<h1 class="fade-up2">
+<span data-i18n="hero.line1">Infrastructure.</span><br/>
+<span class="lime" data-i18n="hero.line2">Structured.</span><br/>
+<span data-i18n="hero.line3">Executed.</span>
+</h1>
+<p class="fade-up3" data-i18n="hero.sub">Strategic advisory for high-impact infrastructure projects. We translate complex challenges into structured, actionable solutions across Latin America.</p>
+<div class="hero-btns fade-up4">
+<button class="btn-primary" onclick="goTo('services')" data-i18n="hero.cta1">Our Services</button>
+<button class="btn-ghost" onclick="goTo('contact')" data-i18n="hero.cta2">Start a Conversation</button>
+</div>
+</div>
+
+<div class="home-hero-right">
+<div class="stat-block">
+<div class="stat-num">PPPs<span></span></div>
+<div class="stat-label">Public–Private Partnerships</div>
+</div>
+<div class="stat-block">
+<div class="stat-num">$<span>bn</span></div>
+<div class="stat-label">Complex Transaction Structuring</div>
+</div>
+<div class="stat-block">
+<div class="stat-num">LatAm<span>+</span></div>
+<div class="stat-label">Sovereign & Sub-Sovereign Coverage</div>
+</div>
+</div>
+
+<svg class="hero-wave" viewBox="0 0 1440 55" fill="none">
+<path d="M0 28 Q360 6 720 28 Q1080 50 1440 28 L1440 55 L0 55 Z" fill="white"/>
+</svg>
+
+</section>
+
+<!-- About teaser -->
+
+<section class="about-teaser">
+<div class="two-col">
+<div>
+<div class="eyebrow dark" data-i18n="aboutTeaser.eyebrow">Who We Are</div>
+<h2 class="h2 navy" style="margin-bottom:1.4rem" data-i18n="aboutTeaser.title">A platform built for the most demanding transactions</h2>
+<p style="font-size:.9rem;line-height:1.85;color:var(--muted);margin-bottom:1.2rem" data-i18n="aboutTeaser.p1">Nilus  is a strategic advisory platform that brings together senior, international-level professionals in tailored teams. We work at the intersection of legal, financial, and operational expertise to support the full lifecycle of high-impact infrastructure projects.</p>
+<p style="font-size:.9rem;line-height:1.85;color:var(--muted);margin-bottom:1.4rem" data-i18n="aboutTeaser.p2">Inspired by the force and constancy of a river — always finding a path — Nilus is built to navigate complexity and deliver clarity where it matters most.</p>
+<button class="btn-ghost-dark" onclick="goTo('about')" data-i18n="aboutTeaser.cta">Learn More About Us</button>
+</div>
+<div class="about-cards" id="home-about-cards">
+<!-- filled by JS -->
+</div>
+</div>
+</section>
+
+<!-- Services teaser -->
+
+<section class="services-teaser">
+<div class="services-header">
+<div>
+<div class="eyebrow light" data-i18n="servicesTeaser.eyebrow">What We Do</div>
+<h2 class="h2 light" data-i18n="servicesTeaser.title">Our Advisory Services</h2>
+</div>
+<p data-i18n="servicesTeaser.sub">We work across the full spectrum of infrastructure advisory — from project conception to financial close and operational implementation.</p>
+</div>
+<div class="svc-grid" id="home-svc-grid"><!-- filled by JS --></div>
+<div class="svc-view-all">
+<button class="btn-ghost" onclick="goTo('services')" data-i18n="servicesTeaser.viewAll">View All Services →</button>
+</div>
+</section>
+
+<!-- CTA strip -->
+
+<section class="cta-strip">
+<div>
+<div class="cta-eyebrow" data-i18n="cta.eyebrow">Ready to begin?</div>
+<div class="cta-title" data-i18n="cta.title">Let's discuss your project.</div>
+</div>
+<div class="cta-btns">
+<button class="btn-dark" onclick="goTo('contact')" data-i18n="cta.btn1">Get in Touch</button>
+<button class="btn-ghost-dark" onclick="goTo('services')" data-i18n="cta.btn2">View Services</button>
+</div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════
+ABOUT PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page" id="page-about">
+<div class="inner-hero">
+<div class="inner-hero-content">
+<div class="eyebrow light" data-i18n="about.heroEyebrow">About Nilus</div>
+<h1 class="fade-up" data-i18n="about.heroTitle">Advisory built on precision and execution.</h1>
+<p class="fade-up2" data-i18n="about.heroSub">We are a strategic advisory platform focused on infrastructure, PPPs, and complex transactions — bringing senior expertise to every engagement.</p>
+</div>
+</div>
+
+<section class="about-story">
+<div class="two-col">
+<div>
+<div class="eyebrow dark" data-i18n="about.storyEyebrow">Our Story</div>
+<h2 class="h2 navy" style="margin-bottom:1.4rem" data-i18n="about.storyTitle">Where the name comes from</h2>
+<p style="font-size:.9rem;line-height:1.85;color:var(--muted);margin-bottom:1.2rem" data-i18n="about.storyP1">Nilus  is a strategic advisory platform that brings together senior, international-level professionals in tailored teams. We work at the intersection of legal, financial, and operational expertise to support the full lifecycle of high-impact infrastructure projects.</p>
+<p style="font-size:.9rem;line-height:1.85;color:var(--muted)" data-i18n="about.storyP2">Inspired by the force and constancy of a river — always finding a path — Nilus is built to navigate complexity and deliver clarity where it matters most.</p>
+</div>
+<div class="quote-box">
+<blockquote data-i18n="about.quote">"We focus on clarity, precision, and execution. Our role is to translate complex challenges into structured, actionable solutions — aligning technical, financial, and legal dimensions from early-stage design through implementation."</blockquote>
+<div class="quote-line"></div>
+</div>
+</div>
+</section>
+
+<section class="principles">
+<div class="eyebrow dark" data-i18n="about.principlesEyebrow">What Drives Us</div>
+<h2 class="h2 navy" data-i18n="about.principlesTitle">Our Principles</h2>
+<div class="principles-grid" id="about-principles"><!-- filled by JS --></div>
+</section>
+
+<section class="coverage">
+<div class="coverage-inner">
+<div style="flex-shrink:0">
+<div class="eyebrow light" data-i18n="about.coverageEyebrow">Coverage</div>
+<h2 class="h2 light" style="font-size:1.5rem" data-i18n="about.coverageTitle">Sectors &<br/>Geographies</h2>
+</div>
+<div class="coverage-tags" id="about-tags"><!-- filled by JS --></div>
+</div>
+</section>
+
+<section class="about-cta">
+<div>
+<div class="eyebrow dark" data-i18n="about.ctaEyebrow">Work With Us</div>
+<h2 class="h2 navy" data-i18n="about.ctaTitle">Ready to start a conversation?</h2>
+</div>
+<div class="flex-row">
+<button class="btn-primary" onclick="goTo('contact')" data-i18n="about.ctaBtn1">Contact Us</button>
+<button class="btn-ghost-dark" onclick="goTo('team')" data-i18n="about.ctaBtn2">Meet the Team</button>
+</div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════
+SERVICES PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page" id="page-services">
+<div class="inner-hero">
+<div class="inner-hero-content">
+<div class="eyebrow light" data-i18n="services.heroEyebrow">What We Do</div>
+<h1 class="fade-up" data-i18n="services.heroTitle">Advisory services for infrastructure and complex transactions.</h1>
+<p class="fade-up2" data-i18n="services.heroSub">We work across the full spectrum of infrastructure advisory — from project conception to financial close and operational implementation.</p>
+</div>
+</div>
+
+<section class="services-list">
+<div id="services-list"><!-- filled by JS --></div>
+</section>
+
+<section class="approach">
+<div class="eyebrow dark" data-i18n="services.approachEyebrow">How We Work</div>
+<h2 class="h2 navy" data-i18n="services.approachTitle">Our Approach</h2>
+<div class="steps-grid" id="steps-grid"><!-- filled by JS --></div>
+</section>
+
+<section class="services-cta">
+<p data-i18n="services.ctaSub">Every project is different. Let's discuss what Nilus can bring to yours.</p>
+<button class="btn-primary" onclick="goTo('contact')" data-i18n="services.ctaBtn">Start a Conversation</button>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════
+TEAM PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page" id="page-team">
+<div class="inner-hero">
+<div class="inner-hero-content">
+<div class="eyebrow light" data-i18n="team.heroEyebrow">Our Team</div>
+<h1 class="fade-up" data-i18n="team.heroTitle">Senior professionals. Tailored engagements.</h1>
+<p class="fade-up2" data-i18n="team.heroSub">Nilus brings together experienced advisors with international track records — assembled specifically around the demands of each project.</p>
+</div>
+</div>
+
+<section class="team-intro">
+<div class="team-lead">
+<div class="eyebrow dark" data-i18n="team.modelEyebrow">How We Work</div>
+<h2 class="h2 navy" style="margin-bottom:1.2rem" data-i18n="team.modelTitle">Built around your project, not a fixed org chart</h2>
+<p data-i18n="team.modelP">Every engagement at Nilus is led by senior professionals with direct, relevant experience — drawn from a curated network across legal, financial, technical, and operational disciplines. We assemble the right team for each specific project, which means you always work with people whose expertise is precisely matched to your needs.</p>
+</div>
+<div class="roles-grid" id="roles-grid"><!-- filled by JS --></div>
+</section>
+
+<section class="team-model">
+<div class="team-model-inner">
+<div>
+<div class="eyebrow light" data-i18n="team.ourModelEyebrow">Our Model</div>
+<h2 class="h2 light" data-i18n="team.ourModelTitle">Senior expertise, engaged directly</h2>
+<p data-i18n="team.ourModelP1">Every engagement is led by senior professionals with direct, relevant experience. The people who structure your transaction are the people you meet at the outset — we do not delegate to junior teams.</p>
+<p data-i18n="team.ourModelP2">Our work spans sovereign and sub-sovereign transactions, project finance, structured finance, and large-scale infrastructure developments across Latin America.</p>
+</div>
+<div class="disciplines" id="disciplines"><!-- filled by JS --></div>
+</div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════
+INSIGHTS PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page" id="page-insights">
+<div class="inner-hero">
+<div class="inner-hero-content">
+<div class="eyebrow light" data-i18n="insights.heroEyebrow">Insights</div>
+<h1 class="fade-up" data-i18n="insights.heroTitle">Infrastructure intelligence for decision-makers.</h1>
+<p class="fade-up2" data-i18n="insights.heroSub">Perspectives on PPPs, project finance, regulatory developments, and strategic advisory across Latin America.</p>
+</div>
+</div>
+
+<section class="newsletter-strip">
+<div class="newsletter-inner">
+<div>
+<div class="newsletter-label" data-i18n="insights.newsletterLabel">Newsletter</div>
+<h2 data-i18n="insights.newsletterTitle">Stay informed. No noise.</h2>
+<p data-i18n="insights.newsletterP">Our newsletter covers infrastructure trends, PPP developments, project finance, and strategic advisory perspectives across Latin America. 1–2 issues per month — relevant intelligence for decision-makers, nothing more.</p>
+<div class="newsletter-tags" id="newsletter-tags"><!-- filled by JS --></div>
+</div>
+<div>
+<div id="subscribe-form-wrap">
+<form class="subscribe-form" id="subscribe-form" action="https://nilus.us9.list-manage.com/subscribe/post?u=ad3ae193e69b3265b0fa7d9d7&amp;id=a89fea1c8b" method="POST" target="hidden-mailchimp-frame">
+<input type="email" name="EMAIL" id="sub-email" required data-i18n-placeholder="insights.placeholder" placeholder="your@email.com"/>
+<button type="submit" data-i18n="insights.subscribeBtn">Subscribe →</button>
+</form>
+<iframe name="hidden-mailchimp-frame" style="display:none"></iframe>
+<p class="subscribe-note" data-i18n="insights.subscribeNote">We send 1–2 issues per month. Unsubscribe anytime.</p>
+<p class="subscribe-result" id="subscribe-result" aria-live="polite"></p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="articles-section">
+<div class="eyebrow dark" data-i18n="insights.latestEyebrow">Latest</div>
+<h2 class="h2 navy" data-i18n="insights.latestTitle">Recent Insights</h2>
+<div class="articles-grid" id="articles-grid"><!-- filled by JS --></div>
+<div class="articles-note">
+<p data-i18n="insights.comingSoonNote">Our first insights will be published soon. Subscribe above to be notified when they go live.</p>
+</div>
+</section>
+</div>
+
+<!-- ══════════════════════════════════════════════
+CONTACT PAGE
+══════════════════════════════════════════════ -->
+
+<div class="page contact-page" id="page-contact">
+<div class="contact-header">
+<div class="eyebrow light" data-i18n="contact.heroEyebrow">Work With Us</div>
+<h1 data-i18n="contact.heroTitle">Let's discuss<br/>your project.</h1>
+</div>
+<div class="contact-body">
+<div class="contact-grid">
+<div class="contact-left">
+<p data-i18n="contact.introPara">Whether you're at the earliest stages of project conception or approaching a complex transaction, we'd like to understand what you're working on.</p>
+<div class="contact-detail">
+<div class="contact-detail-label">Email</div>
+<div class="contact-detail-value">contact@nilus.com.py</div>
+</div>
+<div class="contact-detail">
+<div class="contact-detail-label">Phone</div>
+<div class="contact-detail-value">T. (+595 21) 326 0814</div>
+</div>
+<div class="contact-detail">
+<div class="contact-detail-label">Mobile</div>
+<div class="contact-detail-value">M. (+595 981) 222 417</div>
+</div>
+<div class="contact-detail">
+<div class="contact-detail-label">Location</div>
+<div class="contact-detail-value">Asunción, Paraguay</div>
+</div>
+<div class="contact-detail">
+<div class="contact-detail-label">Website</div>
+<div class="contact-detail-value">nilus.com.py</div>
+</div>
+</div>
+
+<div>
+<div class="form-success" id="form-success">
+<div class="form-success-check">✓</div>
+<h3 data-i18n="contact.sentTitle">Message received.</h3>
+<p data-i18n="contact.sentMsg">Thank you for reaching out. A member of the Nilus team will be in touch shortly.</p>
+</div>
+<form class="contact-form" id="contact-form">
+<div class="form-row">
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.first">First Name</label>
+<input class="form-input" type="text" placeholder="María" id="f-first" name="firstName"/>
+</div>
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.last">Last Name</label>
+<input class="form-input" type="text" placeholder="González" id="f-last" name="lastName"/>
+</div>
+</div>
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.org">Organization</label>
+<input class="form-input" type="text" data-i18n-placeholder="contact.orgPlaceholder" placeholder="Ministry / Company / Institution" id="f-org" name="organization"/>
+</div>
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.email">Email</label>
+<input class="form-input" type="email" data-i18n-placeholder="contact.emailPlaceholder" placeholder="you@organization.com" id="f-email" name="email" required/>
+</div>
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.area">Area of Interest</label>
+<select class="form-input" id="f-area" name="area">
+<option value="" data-i18n="contact.areaDefault">Select a service area</option>
+</select>
+</div>
+<div class="form-group">
+<label class="form-label" data-i18n="contact.fields.msg">Message</label>
+<textarea class="form-input" rows="5" data-i18n-placeholder="contact.msgPlaceholder" placeholder="Briefly describe your project or inquiry..." id="f-msg" name="message" required></textarea>
+</div>
+<button type="submit" class="btn-primary" data-i18n="contact.sendBtn">Send Inquiry →</button>
+<p id="contact-message" style="margin-top:10px;font-size:14px;"></p></form>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+FOOTER
+══════════════════════════════════════════════ -->
+
+<footer id="main-footer">
+<div class="footer-grid">
+<div>
+<div class="footer-logo" onclick="goTo('home')">
+<img src="logo-nilus.png" style="height:44px; width:auto; display:block;" />
+<div class="sub"></div>
+</div>
+<p class="footer-tagline" data-i18n="footer.tagline">Strategic advisory for high-impact infrastructure projects across Latin America.</p>
+</div>
+<div>
+<div class="footer-col-title" data-i18n="footer.navigation">Navigation</div>
+<div class="footer-nav" id="footer-nav"><!-- filled by JS --></div>
+</div>
+<div>
+<div class="footer-col-title" data-i18n="footer.contact">Contact</div>
+<div class="footer-contact-item">contact@nilus.com.py</div>
+<div class="footer-contact-item">T. (+595 21) 326 0814</div>
+<div class="footer-contact-item">Asunción, Paraguay</div>
+</div>
+</div>
+<div class="footer-bottom">
+<span class="footer-copy" data-i18n="footer.copy">© 2026 Nilus . All rights reserved.</span>
+<span class="footer-copy">nilus.com.py</span>
+</div>
+</footer>
+
+<!-- ══════════════════════════════════════════════
+JAVASCRIPT
+══════════════════════════════════════════════ -->
+
+<script>
+
+/* ── TRANSLATIONS ── */
+const T = {
+en: {
+nav: ["Home","About","Services","Team","Insights","Contact"],
+getInTouch: "Get in Touch",
+hero: {
+eyebrow:"Strategic Advisory", line1:"Infrastructure.", line2:"Structured.", line3:"Executed.",
+sub:"Strategic advisory for high-impact infrastructure projects. We translate complex challenges into structured, actionable solutions across Latin America.",
+cta1:"Our Services", cta2:"Start a Conversation"
+},
+aboutTeaser: {
+eyebrow:"Who We Are",
+title:"A platform built for the most demanding transactions",
+p1:"Nilus  is a strategic advisory platform that brings together senior, international-level professionals in tailored teams. We work at the intersection of legal, financial, and operational expertise to support the full lifecycle of high-impact infrastructure projects.",
+p2:"Inspired by the force and constancy of a river — always finding a path — Nilus is built to navigate complexity and deliver clarity where it matters most.",
+cta:"Learn More About Us",
+cards:[
+{h:"Senior Expertise",p:"Our professionals bring deep, international experience across public and private sector transactions, assembled specifically for each engagement."},
+{h:"Tailored Teams",p:"No fixed structures. We design our teams around the technical, legal, and financial demands of your specific project."},
+{h:"End-to-End Coverage",p:"From early-stage design through financial close and implementation, we stay engaged across every critical dimension."}
+]
+},
+servicesTeaser: {
+eyebrow:"What We Do", title:"Our Advisory Services",
+sub:"We work across the full spectrum of infrastructure advisory — from project conception to financial close and operational implementation.",
+viewAll:"View All Services →",
+items:[
+{n:"01",h:"Infrastructure Advisory",d:"Strategic support for the design, structuring, and execution of large-scale infrastructure projects."},
+{n:"02",h:"PPP Structuring",d:"End-to-end advisory on public-private partnerships — risk allocation, contract design, and procurement support."},
+{n:"03",h:"Project Finance",d:"Financial structuring, lender coordination, and financial model development for complex transactions."}
+]
+},
+cta:{ eyebrow:"Ready to begin?", title:"Let's discuss your project.", btn1:"Get in Touch", btn2:"View Services" },
+about:{
+heroEyebrow:"About Nilus", heroTitle:"Advisory built on precision and execution.",
+heroSub:"We are a strategic advisory platform focused on infrastructure, PPPs, and complex transactions — bringing senior expertise to every engagement.",
+storyEyebrow:"Our Story", storyTitle:"Where the name comes from",
+storyP1:"Nilus  is a strategic advisory platform that brings together senior, international-level professionals in tailored teams. We work at the intersection of legal, financial, and operational expertise to support the full lifecycle of high-impact infrastructure projects.",
+storyP2:"Inspired by the force and constancy of a river — always finding a path — Nilus is built to navigate complexity and deliver clarity where it matters most.",
+quote:"\u201cWe focus on clarity, precision, and execution. Our role is to translate complex challenges into structured, actionable solutions \u2014 aligning technical, financial, and legal dimensions from early-stage design through implementation.\u201d",
+principlesEyebrow:"What Drives Us", principlesTitle:"Our Principles",
+principles:[
+{h:"Clarity",d:"We believe the highest value an advisor can provide is turning ambiguity into a clear, actionable path forward — for every stakeholder."},
+{h:"Precision",d:"Structural details matter in complex transactions. We are meticulous in our analysis, our documentation, and our recommendations."},
+{h:"Execution",d:"Strategy without implementation is incomplete. We stay engaged through every phase — from design to financial close to delivery."},
+{h:"Alignment",d:"Legal, financial, and operational dimensions must work together. We design structures where all parts reinforce each other."},
+{h:"Senior Accountability",d:"Every engagement is led by senior professionals. We don't hand off work to junior teams."},
+{h:"Tailored Approach",d:"No two projects are the same. We build our teams and our methodologies around the specific needs of each mandate."}
+],
+coverageEyebrow:"Coverage", coverageTitle:"Sectors & Geographies",
+tags:["Transport Infrastructure","Energy & Utilities","Social Infrastructure","Water & Sanitation","Sovereign Transactions","Sub-Sovereign Finance","Latin America","Multilateral Finance","Concessions & Licenses","Digital Infrastructure","Project Finance","Blended Finance"],
+ctaEyebrow:"Work With Us", ctaTitle:"Ready to start a conversation?", ctaBtn1:"Contact Us", ctaBtn2:"Meet the Team"
+},
+services:{
+heroEyebrow:"What We Do", heroTitle:"Advisory services for infrastructure and complex transactions.",
+heroSub:"We work across the full spectrum of infrastructure advisory — from project conception to financial close and operational implementation.",
+items:[
+{n:"01",h:"Infrastructure Advisory",d:"Strategic support for the design, structuring, and execution of large-scale infrastructure projects, from transport to energy and social infrastructure.",tags:["Transport","Energy","Social Infrastructure"]},
+{n:"02",h:"PPP Structuring",d:"End-to-end advisory on public-private partnerships — risk allocation, contract design, regulatory frameworks, and procurement support for governments and private sponsors.",tags:["Risk Allocation","Contract Design","Procurement"]},
+{n:"03",h:"Project Finance",d:"Financial structuring for complex transactions including debt arrangement, lender coordination, financial model development, and due diligence management.",tags:["Debt Arrangement","Lender Coordination","Modeling"]},
+{n:"04",h:"Structured Finance",d:"Bespoke financing solutions for sovereign and sub-sovereign entities, blended finance instruments, multilateral debt structures, and capital market transactions.",tags:["Sovereign Finance","Blended Finance","Multilateral"]},
+{n:"05",h:"Transaction Management",d:"Coordinated legal, financial, and technical advisory throughout the transaction lifecycle, ensuring alignment across all workstreams from inception to close.",tags:["Workstream Coordination","Stakeholder Management","Close"]},
+{n:"06",h:"Regulatory & Legal Framing",d:"Support for the legal and institutional frameworks that underpin complex transactions, from procurement rules to concession agreements and sector-specific legislation.",tags:["Regulation","Concessions","Procurement Law"]}
+],
+approachEyebrow:"How We Work", approachTitle:"Our Approach",
+steps:[
+{n:"01",h:"Project Diagnosis",p:"We begin by understanding the full technical, financial, and institutional context — identifying the critical path and key risks before recommending a structure."},
+{n:"02",h:"Team Assembly",p:"We build a dedicated team with the precise expertise your project requires — legal, financial, technical — drawing from our network of senior professionals."},
+{n:"03",h:"Structural Design",p:"We develop the contractual, financial, and operational architecture that will govern the transaction — ensuring all dimensions are aligned from the outset."},
+{n:"04",h:"Execution & Close",p:"We support negotiation, stakeholder coordination, and implementation phases through to financial close — staying engaged until delivery is secured."}
+],
+ctaSub:"Every project is different. Let's discuss what Nilus can bring to yours.",
+ctaBtn:"Start a Conversation"
+},
+team:{
+heroEyebrow:"Our Team", heroTitle:"Senior professionals. Tailored engagements.",
+heroSub:"Nilus brings together experienced advisors with international track records — assembled specifically around the demands of each project.",
+modelEyebrow:"How We Work", modelTitle:"Built around your project, not a fixed org chart",
+modelP:"Every engagement at Nilus is led by senior professionals with direct, relevant experience — drawn from a curated network across legal, financial, technical, and operational disciplines. We assemble the right team for each specific project, which means you always work with people whose expertise is precisely matched to your needs.",
+roles:[
+{role:"Strategic Advisory",spec:"Infrastructure & PPPs",bio:"Senior expertise in the design and structuring of large-scale infrastructure transactions, public-private partnerships, and sovereign project development across Latin America.",areas:["Infrastructure","PPP Structuring","Sovereign Transactions"]},
+{role:"Legal Advisory",spec:"Regulatory & Concessions",bio:"Specialist expertise in the legal and institutional frameworks underpinning complex transactions — from procurement regulation to concession agreements and sector-specific legislation.",areas:["Regulatory Law","Concession Agreements","Procurement"]},
+{role:"Financial Advisory",spec:"Project & Structured Finance",bio:"Deep experience in financial structuring, multilateral debt instruments, blended finance, and the modeling and due diligence required for complex infrastructure transactions.",areas:["Project Finance","Structured Finance","Multilateral Debt"]},
+{role:"Technical Advisory",spec:"Engineering & Operations",bio:"Technical expertise covering the operational and engineering dimensions of infrastructure projects — from feasibility and design through construction oversight and commissioning.",areas:["Feasibility","Engineering","Operations"]}
+],
+ourModelEyebrow:"Our Model", ourModelTitle:"Senior expertise, engaged directly",
+ourModelP1:"Every engagement is led by senior professionals with direct, relevant experience. The people who structure your transaction are the people you meet at the outset — we do not delegate to junior teams.",
+ourModelP2:"Our work spans sovereign and sub-sovereign transactions, project finance, structured finance, and large-scale infrastructure developments across Latin America.",
+disciplines:["Legal & Regulatory","Financial Structuring","Technical Advisory","Transaction Management","Stakeholder Relations"]
+},
+insights:{
+heroEyebrow:"Insights", heroTitle:"Infrastructure intelligence for decision-makers.",
+heroSub:"Perspectives on PPPs, project finance, regulatory developments, and strategic advisory across Latin America.",
+newsletterLabel:"Newsletter", newsletterTitle:"Stay informed. No noise.",
+newsletterP:"Our newsletter covers infrastructure trends, PPP developments, project finance, and strategic advisory perspectives across Latin America. 1\u20132 issues per month \u2014 relevant intelligence for decision-makers, nothing more.",
+tags:["PPPs","Project Finance","Infrastructure","LatAm Markets","Regulation"],
+placeholder:"your@email.com", subscribeBtn:"Subscribe \u2192",
+subscribeNote:"We send 1\u20132 issues per month. Unsubscribe anytime.",
+subscribedMsg:"\u2713 You\u2019re subscribed. Welcome to the Nilus network.",
+latestEyebrow:"Latest", latestTitle:"Recent Insights",
+articles:[
+{cat:"PPPs",title:"Structuring PPPs in emerging markets: key risk allocation principles",url:"insight-paraguay-financiamiento.html"},
+{cat:"Project Finance",title:"Multilateral lending and the changing landscape of infrastructure finance in Latin America"},
+{cat:"Infrastructure",title:"From design to close: managing complexity in sovereign infrastructure transactions"}
+],
+comingSoon:"Coming soon",
+comingSoonNote:"Insights are updated periodically to reflect developments in infrastructure, project finance and strategic advisory across Latin America."
+},
+contact:{
+heroEyebrow:"Work With Us", heroTitle:"Let's discuss<br/>your project.",
+introPara:"Whether you're at the earliest stages of project conception or approaching a complex transaction, we'd like to understand what you're working on.",
+fields:{first:"First Name",last:"Last Name",org:"Organization",email:"Email",area:"Area of Interest",msg:"Message"},
+orgPlaceholder:"Ministry / Company / Institution", emailPlaceholder:"you@organization.com",
+msgPlaceholder:"Briefly describe your project or inquiry...", areaDefault:"Select a service area",
+areas:["Infrastructure Advisory","PPP Structuring","Project Finance","Structured Finance","Transaction Management","Other"],
+sendBtn:"Send Inquiry \u2192", sentTitle:"Message received.",
+sentMsg:"Thank you for reaching out. A member of the Nilus team will be in touch shortly."
+},
+footer:{
+tagline:"Strategic advisory for high-impact infrastructure projects across Latin America.",
+navigation:"Navigation", contact:"Contact",
+copy:"\u00A9 2026 Nilus . All rights reserved."
+}
+},
+
+es: {
+nav:["Inicio","Nosotros","Servicios","Equipo","Perspectivas","Contacto"],
+getInTouch:"Contáctenos",
+hero:{
+eyebrow:"Asesoría Estratégica", line1:"Infraestructura.", line2:"Estructurada.", line3:"Ejecutada.",
+sub:"Asesoría estratégica para proyectos de infraestructura de alto impacto. Traducimos desafíos complejos en soluciones estructuradas y accionables en toda América Latina.",
+cta1:"Nuestros Servicios", cta2:"Iniciar una Conversación"
+},
+aboutTeaser:{
+eyebrow:"Quiénes Somos", title:"Una plataforma creada para las transacciones más exigentes",
+p1:"Nilus  es una plataforma de asesoría estratégica que reúne a profesionales senior de nivel internacional en equipos a medida. Trabajamos en la intersección de la experiencia legal, financiera y operacional para apoyar el ciclo de vida completo de proyectos de infraestructura de alto impacto.",
+p2:"Inspirados en la fuerza y constancia de un río — siempre encontrando un camino — Nilus está construido para navegar la complejidad y entregar claridad donde más importa.",
+cta:"Conózcanos Mejor",
+cards:[
+{h:"Experiencia Senior",p:"Nuestros profesionales aportan experiencia internacional profunda en transacciones del sector público y privado, convocados específicamente para cada mandato."},
+{h:"Equipos a Medida",p:"Sin estructuras fijas. Diseñamos nuestros equipos en función de las exigencias técnicas, legales y financieras de su proyecto específico."},
+{h:"Cobertura Integral",p:"Desde el diseño inicial hasta el cierre financiero y la implementación, permanecemos comprometidos en cada dimensión crítica."}
+]
+},
+servicesTeaser:{
+eyebrow:"Qué Hacemos", title:"Nuestros Servicios de Asesoría",
+sub:"Trabajamos en todo el espectro de asesoría en infraestructura — desde la concepción del proyecto hasta el cierre financiero y la implementación operacional.",
+viewAll:"Ver Todos los Servicios →",
+items:[
+{n:"01",h:"Asesoría en Infraestructura",d:"Apoyo estratégico para el diseño, estructuración y ejecución de proyectos de infraestructura a gran escala."},
+{n:"02",h:"Estructuración de APP",d:"Asesoría integral en asociaciones público-privadas — asignación de riesgos, diseño contractual y apoyo en licitaciones."},
+{n:"03",h:"Finanzas de Proyectos",d:"Estructuración financiera, coordinación con prestamistas y desarrollo de modelos financieros para transacciones complejas."}
+]
+},
+cta:{eyebrow:"¿Listo para comenzar?",title:"Hablemos de su proyecto.",btn1:"Contáctenos",btn2:"Ver Servicios"},
+about:{
+heroEyebrow:"Sobre Nilus", heroTitle:"Asesoría construida sobre precisión y ejecución.",
+heroSub:"Somos una plataforma de asesoría estratégica enfocada en infraestructura, APPs y transacciones complejas — aportando experiencia senior a cada mandato.",
+storyEyebrow:"Nuestra Historia", storyTitle:"De dónde viene el nombre",
+storyP1:"Nilus  es una plataforma de asesoría estratégica que reúne a profesionales senior de nivel internacional en equipos a medida. Trabajamos en la intersección de la experiencia legal, financiera y operacional para apoyar el ciclo de vida completo de proyectos de infraestructura de alto impacto.",
+storyP2:"Inspirados en la fuerza y constancia de un río — siempre encontrando un camino — Nilus está construido para navegar la complejidad y entregar claridad donde más importa.",
+quote:"\u201cNos enfocamos en claridad, precisión y ejecución. Nuestro rol es traducir desafíos complejos en soluciones estructuradas y accionables — alineando las dimensiones técnicas, financieras y legales desde el diseño inicial hasta la implementación.\u201d",
+principlesEyebrow:"Lo Que Nos Mueve", principlesTitle:"Nuestros Principios",
+principles:[
+{h:"Claridad",d:"Creemos que el mayor valor que puede aportar un asesor es convertir la ambigüedad en un camino claro y accionable — para todos los interesados."},
+{h:"Precisión",d:"Los detalles estructurales importan en transacciones complejas. Somos meticulosos en nuestros análisis, documentación y recomendaciones."},
+{h:"Ejecución",d:"Una estrategia sin implementación está incompleta. Permanecemos involucrados en cada fase — desde el diseño hasta el cierre financiero."},
+{h:"Alineación",d:"Las dimensiones legales, financieras y operacionales deben funcionar juntas. Diseñamos estructuras donde todas las partes se refuerzan mutuamente."},
+{h:"Responsabilidad Senior",d:"Cada mandato es liderado por profesionales senior. No delegamos el trabajo a equipos junior."},
+{h:"Enfoque a Medida",d:"No hay dos proyectos iguales. Construimos nuestros equipos y metodologías en torno a las necesidades específicas de cada mandato."}
+],
+coverageEyebrow:"Cobertura", coverageTitle:"Sectores y Geografías",
+tags:["Infraestructura de Transporte","Energía y Servicios","Infraestructura Social","Agua y Saneamiento","Transacciones Soberanas","Finanzas Sub-Soberanas","América Latina","Financiamiento Multilateral","Concesiones y Licencias","Infraestructura Digital","Finanzas de Proyectos","Finanzas Mixtas"],
+ctaEyebrow:"Trabaje con Nosotros", ctaTitle:"¿Listo para iniciar una conversación?",
+ctaBtn1:"Contáctenos", ctaBtn2:"Conozca el Equipo"
+},
+services:{
+heroEyebrow:"Qué Hacemos", heroTitle:"Servicios de asesoría para infraestructura y transacciones complejas.",
+heroSub:"Trabajamos en todo el espectro de asesoría en infraestructura — desde la concepción del proyecto hasta el cierre financiero y la implementación operacional.",
+items:[
+{n:"01",h:"Asesoría en Infraestructura",d:"Apoyo estratégico para el diseño, estructuración y ejecución de proyectos de infraestructura a gran escala, desde transporte hasta energía e infraestructura social.",tags:["Transporte","Energía","Infraestructura Social"]},
+{n:"02",h:"Estructuración de APP",d:"Asesoría integral en asociaciones público-privadas — marcos de asignación de riesgos, diseño contractual, estructuración regulatoria y apoyo en licitaciones.",tags:["Asignación de Riesgos","Diseño Contractual","Licitaciones"]},
+{n:"03",h:"Finanzas de Proyectos",d:"Estructuración financiera para transacciones complejas, incluyendo gestión de deuda, coordinación con prestamistas, desarrollo de modelos financieros y due diligence.",tags:["Gestión de Deuda","Coordinación","Modelación"]},
+{n:"04",h:"Finanzas Estructuradas",d:"Soluciones de financiamiento a medida para entidades soberanas y sub-soberanas — instrumentos de financiamiento mixto, estructuras de deuda multilateral y transacciones de mercado de capitales.",tags:["Finanzas Soberanas","Financiamiento Mixto","Multilateral"]},
+{n:"05",h:"Gestión de Transacciones",d:"Asesoría legal, financiera y técnica coordinada a lo largo del ciclo de vida de la transacción, asegurando la alineación de todos los flujos de trabajo desde el inicio hasta el cierre.",tags:["Coordinación","Partes Interesadas","Cierre"]},
+{n:"06",h:"Marco Legal y Regulatorio",d:"Apoyo para los marcos legales e institucionales que sustentan transacciones complejas, desde regulaciones de adquisición hasta contratos de concesión y legislación sectorial.",tags:["Regulación","Concesiones","Derecho Administrativo"]}
+],
+approachEyebrow:"Cómo Trabajamos", approachTitle:"Nuestro Enfoque",
+steps:[
+{n:"01",h:"Diagnóstico del Proyecto",p:"Comenzamos comprendiendo el contexto técnico, financiero e institucional completo — identificando la ruta crítica y los riesgos clave antes de recomendar una estructura."},
+{n:"02",h:"Conformación del Equipo",p:"Conformamos un equipo dedicado con la experiencia precisa que su proyecto requiere — legal, financiera, técnica — basándonos en nuestra red de profesionales senior."},
+{n:"03",h:"Diseño Estructural",p:"Desarrollamos la arquitectura contractual, financiera y operacional que regirá la transacción — asegurando que todas las dimensiones estén alineadas desde el inicio."},
+{n:"04",h:"Ejecución y Cierre",p:"Apoyamos las fases de negociación, coordinación y ejecución hasta el cierre financiero — permaneciendo involucrados hasta que la entrega esté asegurada."}
+],
+ctaSub:"Cada proyecto es diferente. Hablemos de lo que Nilus puede aportar al suyo.",
+ctaBtn:"Iniciar una Conversación"
+},
+team:{
+heroEyebrow:"Nuestro Equipo", heroTitle:"Profesionales senior. Mandatos a medida.",
+heroSub:"Nilus reúne a asesores experimentados con trayectorias internacionales — convocados específicamente en función de las exigencias de cada proyecto.",
+modelEyebrow:"Cómo Trabajamos", modelTitle:"Construido en torno a su proyecto, no a un organigrama fijo",
+modelP:"Cada mandato en Nilus es liderado por profesionales senior con experiencia directa y relevante — provenientes de una red curada de especialistas en disciplinas legales, financieras, técnicas y operacionales. Conformamos el equipo adecuado para cada proyecto específico, lo que significa que siempre trabaja con personas cuya experiencia está precisamente adaptada a sus necesidades.",
+roles:[
+{role:"Asesoría Estratégica",spec:"Infraestructura y APPs",bio:"Experiencia senior en el diseño y estructuración de transacciones de infraestructura a gran escala, asociaciones público-privadas y desarrollo de proyectos soberanos en América Latina.",areas:["Infraestructura","Estructuración APP","Transacciones Soberanas"]},
+{role:"Asesoría Legal",spec:"Regulatorio y Concesiones",bio:"Experiencia especializada en los marcos legales e institucionales que sustentan transacciones complejas — desde regulaciones de adquisición hasta contratos de concesión y legislación sectorial.",areas:["Derecho Regulatorio","Contratos de Concesión","Licitaciones"]},
+{role:"Asesoría Financiera",spec:"Finanzas de Proyectos y Estructuradas",bio:"Amplia experiencia en estructuración financiera, instrumentos de deuda multilateral, financiamiento mixto y la modelación y due diligence requeridos para transacciones de infraestructura complejas.",areas:["Finanzas de Proyectos","Finanzas Estructuradas","Deuda Multilateral"]},
+{role:"Asesoría Técnica",spec:"Ingeniería y Operaciones",bio:"Experiencia técnica en las dimensiones operacionales e ingenieriles de proyectos de infraestructura — desde la factibilidad y diseño hasta la supervisión de construcción y puesta en marcha.",areas:["Factibilidad","Ingeniería","Operaciones"]}
+],
+ourModelEyebrow:"Nuestro Modelo", ourModelTitle:"Experiencia senior, comprometida directamente",
+ourModelP1:"Cada mandato es liderado por profesionales senior con experiencia directa y relevante. Las personas que estructuran su transacción son las mismas que conoce desde el inicio — no delegamos a equipos junior.",
+ourModelP2:"Nuestro trabajo abarca transacciones soberanas y sub-soberanas, finanzas de proyectos, finanzas estructuradas y desarrollos de infraestructura a gran escala en toda América Latina.",
+disciplines:["Legal y Regulatorio","Estructuración Financiera","Asesoría Técnica","Gestión de Transacciones","Relaciones con Partes Interesadas"]
+},
+insights:{
+heroEyebrow:"Perspectivas", heroTitle:"Inteligencia en infraestructura para tomadores de decisiones.",
+heroSub:"Perspectivas sobre APPs, finanzas de proyectos, desarrollos regulatorios y asesoría estratégica en América Latina.",
+newsletterLabel:"Boletín", newsletterTitle:"Manténgase informado. Sin ruido.",
+newsletterP:"Nuestro boletín cubre tendencias en infraestructura, desarrollos en APPs, finanzas de proyectos y perspectivas de asesoría estratégica en América Latina. 1–2 ediciones al mes — inteligencia relevante para tomadores de decisiones, nada más.",
+tags:["APPs","Finanzas de Proyectos","Infraestructura","Mercados LatAm","Regulación"],
+placeholder:"su@correo.com", subscribeBtn:"Suscribirse →",
+subscribeNote:"Enviamos 1–2 ediciones al mes. Puede darse de baja en cualquier momento.",
+subscribedMsg:"✓ Está suscrito. Bienvenido a la red Nilus.",
+latestEyebrow:"Últimas", latestTitle:"Perspectivas Recientes",
+articles:[
+{cat:"APPs",title:"Estructuración de APPs en mercados emergentes: principios clave de asignación de riesgos"},
+{cat:"Finanzas de Proyectos",title:"El financiamiento multilateral y el cambiante panorama de las finanzas de infraestructura en América Latina"},
+{cat:"Infraestructura",title:"Del diseño al cierre: gestión de la complejidad en transacciones de infraestructura soberana"}
+],
+comingSoon:"Próximamente",
+comingSoonNote:"Nuestras primeras perspectivas serán publicadas pronto. Suscríbase arriba para ser notificado cuando estén disponibles."
+},
+contact:{
+heroEyebrow:"Trabaje con Nosotros", heroTitle:"Hablemos de su proyecto.",
+introPara:"Ya sea que esté en las etapas más tempranas de concepción de un proyecto o se aproxime a una transacción compleja, nos gustaría entender en qué está trabajando.",
+fields:{first:"Nombre",last:"Apellido",org:"Organización",email:"Correo Electrónico",area:"Área de Interés",msg:"Mensaje"},
+orgPlaceholder:"Ministerio / Empresa / Institución", emailPlaceholder:"usted@organizacion.com",
+msgPlaceholder:"Describa brevemente su proyecto o consulta...", areaDefault:"Seleccione un área de servicio",
+areas:["Asesoría en Infraestructura","Estructuración de APP","Finanzas de Proyectos","Finanzas Estructuradas","Gestión de Transacciones","Otro"],
+sendBtn:"Enviar Consulta →", sentTitle:"Mensaje recibido.",
+sentMsg:"Gracias por contactarnos. Un miembro del equipo Nilus se pondrá en contacto a la brevedad."
+},
+footer:{
+tagline:"Asesoría estratégica para proyectos de infraestructura de alto impacto en América Latina.",
+navigation:"Navegación", contact:"Contacto",
+copy:"© 2026 Nilus . Todos los derechos reservados."
+}
+}
+};
+
+/* ── STATE ── */
+let currentLang = 'en';
+let currentPage = 'home';
+const hiTags = [0,1,4,6,10];
+const pages = ['home','about','services','team','insights','contact'];
+
+/* ── NAVIGATION ── */
+function goTo(page) {
+currentPage = page;
+// hide all pages
+document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+document.getElementById('page-' + page).classList.add('active');
+// update nav active states
+document.querySelectorAll('[data-page]').forEach(b => {
+b.classList.toggle('active', b.dataset.page === page);
+});
+document.querySelectorAll('[data-mob-page]').forEach(b => {
+b.classList.toggle('active', b.dataset.mobPage === page);
+});
+// close mobile menu
+closeMenu();
+window.scrollTo(0,0);
+// re-render dynamic sections for current lang
+renderDynamic();
+}
+
+/* ── MOBILE MENU ── */
+function toggleMenu() {
+const menu = document.getElementById('mobile-menu');
+const burger = document.getElementById('hamburger');
+const nav = document.getElementById('main-nav');
+const open = menu.classList.toggle('open');
+burger.classList.toggle('open', open);
+nav.classList.toggle('menu-open', open);
+document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function closeMenu() {
+const menu = document.getElementById('mobile-menu');
+const burger = document.getElementById('hamburger');
+const nav = document.getElementById('main-nav');
+menu.classList.remove('open');
+burger.classList.remove('open');
+nav.classList.remove('menu-open');
+document.body.style.overflow = '';
+}
+
+/* ── SCROLL ── */
+window.addEventListener('scroll', () => {
+document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+/* ── LANGUAGE ── */
+function setLang(lang) {
+currentLang = lang;
+// toggle buttons
+['','−mob'].forEach(s => {
+const en = document.getElementById('lang-en' + s);
+const es = document.getElementById('lang-es' + s);
+if (!en || !es) return;
+en.classList.toggle('active', lang === 'en');
+es.classList.toggle('active', lang === 'es');
+});
+applyTranslations();
+renderDynamic();
+}
+
+/* ── APPLY STATIC TRANSLATIONS ── */
+function applyTranslations() {
+const t = T[currentLang];
+// walk all data-i18n elements
+document.querySelectorAll('[data-i18n]').forEach(el => {
+const key = el.dataset.i18n;
+const val = getKey(t, key);
+if (val !== undefined) el.innerHTML = val;
+});
+// placeholders
+document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+const key = el.dataset.i18nPlaceholder;
+const val = getKey(t, key);
+if (val !== undefined) el.placeholder = val;
+});
+// nav items (desktop + mobile)
+const navPages = ['About','Services','Team','Insights','Contact'];
+document.querySelectorAll('#nav-links li button').forEach((btn, i) => {
+btn.textContent = t.nav[i+1];
+});
+document.querySelectorAll('#mobile-menu button[data-mob-page]').forEach((btn, i) => {
+btn.textContent = t.nav[i];
+});
+document.querySelectorAll('.footer-nav button').forEach((btn, i) => {
+btn.textContent = t.nav[i];
+});
+// document lang
+document.documentElement.lang = currentLang;
+}
+
+function getKey(obj, path) {
+return path.split('.').reduce((o,k) => (o && o[k] !== undefined ? o[k] : undefined), obj);
+}
+
+/* ── RENDER DYNAMIC SECTIONS ── */
+function renderDynamic() {
+const t = T[currentLang];
+
+// Home: about cards
+const homeCards = document.getElementById('home-about-cards');
+if (homeCards) {
+homeCards.innerHTML = t.aboutTeaser.cards.map(c => `
+<div class="about-card">
+<h4>${c.h}</h4>
+<p>${c.p}</p>
+</div>`).join('');
+}
+
+// Home: svc grid
+const homeSvc = document.getElementById('home-svc-grid');
+if (homeSvc) {
+homeSvc.innerHTML = t.servicesTeaser.items.map(s => `
+<div class="svc-card" onclick="goTo('services')">
+<div class="svc-n">${s.n}</div>
+<div class="svc-h">${s.h}</div>
+<p class="svc-d">${s.d}</p>
+</div>`).join('');
+}
+
+// About: principles
+const principles = document.getElementById('about-principles');
+if (principles) {
+principles.innerHTML = t.about.principles.map(v => `
+<div class="principle-card">
+<h4>${v.h}</h4>
+<p>${v.d}</p>
+</div>`).join('');
+}
+
+// About: tags
+const aboutTags = document.getElementById('about-tags');
+if (aboutTags) {
+aboutTags.innerHTML = t.about.tags.map((tag, i) => `
+<span class="tag${hiTags.includes(i) ? ' hi' : ''}">${tag}</span>`).join('');
+}
+
+// Services: list
+const svcList = document.getElementById('services-list');
+if (svcList) {
+svcList.innerHTML = t.services.items.map(s => `
+<div class="svc-row">
+<div class="svc-row-n">${s.n}</div>
+<div>
+<h3>${s.h}</h3>
+<p>${s.d}</p>
+</div>
+<div class="svc-tags">
+${s.tags.map(tag => `<span class="svc-tag">${tag}</span>`).join('')}
+</div>
+</div>`).join('');
+}
+
+// Services: steps
+const stepsGrid = document.getElementById('steps-grid');
+if (stepsGrid) {
+stepsGrid.innerHTML = t.services.steps.map(s => `
+<div class="step-card">
+<div class="step-n">${s.n}</div>
+<h4>${s.h}</h4>
+<p>${s.p}</p>
+</div>`).join('');
+}
+
+// Team: roles
+const rolesGrid = document.getElementById('roles-grid');
+if (rolesGrid) {
+rolesGrid.innerHTML = t.team.roles.map(r => `
+<div class="role-card">
+<div class="role-spec">${r.spec}</div>
+<h3>${r.role}</h3>
+<p>${r.bio}</p>
+<div class="role-tags">
+${r.areas.map(a => `<span class="role-tag">${a}</span>`).join('')}
+</div>
+</div>`).join('');
+}
+
+// Team: disciplines
+const disciplines = document.getElementById('disciplines');
+if (disciplines) {
+disciplines.innerHTML = t.team.disciplines.map(d => `
+<div class="discipline"><span>${d}</span></div>`).join('');
+}
+
+// Insights: newsletter tags
+const nlTags = document.getElementById('newsletter-tags');
+if (nlTags) {
+nlTags.innerHTML = t.insights.tags.map(tag => `
+<span class="newsletter-tag">${tag}</span>`).join('');
+}
+
+// Insights: articles
+const articlesGrid = document.getElementById('articles-grid');
+if (articlesGrid) {
+articlesGrid.innerHTML = t.insights.articles.map(a => `
+<div class="article-card">
+<div class="article-cat">${a.cat}</div>
+<h3>${a.title}</h3>
+<div class="article-soon">${t.insights.comingSoon}</div>
+</div>`).join('');
+}
+
+// Contact: area select
+const areaSelect = document.getElementById('f-area');
+if (areaSelect) {
+const tc = t.contact;
+areaSelect.innerHTML = `<option value="">${tc.areaDefault}</option>` +
+tc.areas.map(a => `<option value="${a}">${a}</option>`).join('');
+}
+
+// Footer nav
+const footerNav = document.getElementById('footer-nav');
+if (footerNav) {
+footerNav.innerHTML = pages.map((p, i) => `
+<button onclick="goTo('${p}')">${t.nav[i]}</button>`).join('');
+}
+}
+
+
+/* ── CONTACT FORM ── */
+function handleContact(e) {
+e.preventDefault();
+const email = document.getElementById('f-email').value;
+const msg = document.getElementById('f-msg').value;
+if (!email.includes('@') || !msg.trim()) return;
+document.getElementById('contact-form').style.display = 'none';
+document.getElementById('form-success').classList.add('visible');
+}
+
+/* ── INIT ── */
+applyTranslations();
+renderDynamic();
+
+</script>
+
+<script>
+const contactForm = document.getElementById("contact-form");
+const contactMessage = document.getElementById("contact-message");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(contactForm);
+
+    try {
+      const response = await fetch("https://formspree.io/f/xaqvbnga", {
+        method: "POST",
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+
+      if (response.ok) {
+        const lang = document.documentElement.lang;
+        contactMessage.innerHTML = lang === "es" ? "Mensaje enviado ✔" : "Message sent ✔";
+        contactMessage.style.color = "#C6E01A";
+        contactForm.reset();
+      } else {
+        contactMessage.innerHTML = "Error sending message.";
+        contactMessage.style.color = "#ff6b6b";
+      }
+    } catch(err) {
+      contactMessage.innerHTML = "Connection error.";
+      contactMessage.style.color = "#ff6b6b";
+    }
+  });
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const subscribeForm = document.getElementById('subscribe-form');
+  const subscribeResult = document.getElementById('subscribe-result');
+
+  if (!subscribeForm || !subscribeResult) return;
+
+  subscribeForm.addEventListener('submit', function () {
+    const lang = (document.documentElement.lang || 'en').toLowerCase();
+    subscribeResult.textContent = lang.startsWith('es')
+      ? 'Suscripción confirmada ✓'
+      : 'Subscribed ✓';
+    subscribeResult.style.display = 'block';
+  });
+});
+</script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const insightTitle = 'Structuring PPPs in emerging markets: key risk allocation principles';
+  const cards = Array.from(document.querySelectorAll('*')).filter(function(el){
+    return el.children.length === 0 && el.textContent.trim() === insightTitle;
+  });
+  cards.forEach(function(el){
+    if (el.closest('a')) return;
+    const a = document.createElement('a');
+    a.href = 'insight-paraguay-financiamiento.html';
+    a.style.color = 'inherit';
+    a.style.textDecoration = 'none';
+    a.textContent = insightTitle;
+    el.textContent = '';
+    el.appendChild(a);
+  });
+});
+</script>
+
+<script src="notion-insights.js"></script>
+</body>
+</html>
