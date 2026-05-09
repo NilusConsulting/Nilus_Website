@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const grid = `
       <div class="notion-insights-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;margin-top:40px;">
         ${articles.map(a => `
-          <a href="/insights/${a.slug}.html" style="text-decoration:none;color:inherit;display:block;">
+          <a href="insight.html?slug=${a.slug}" style="text-decoration:none;color:inherit;display:block;">
             <div style="border-top:2px solid #c7d300;padding-top:24px;">
               <div style="font-size:12px;letter-spacing:2px;color:#c7d300;margin-bottom:12px;text-transform:uppercase;">${(a.category || '').toUpperCase()}</div>
               <div style="font-weight:700;font-size:20px;line-height:1.35;margin-bottom:12px;">${a.title}</div>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nilus Insight</title>
+<link rel="icon" href="favicon.ico">
+<style>
+:root{--nilus-blue:#00344D;--nilus-lime:#CBDB2A;--nilus-muted:#5F6B7A;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--nilus-blue);background:#fff;}
+.top-line{height:4px;background:var(--nilus-lime);}
+.wrap{max-width:900px;margin:0 auto;padding:72px 28px 110px;}
+.logo{display:block;width:180px;margin:0 auto 56px;}
+.category{color:var(--nilus-lime);text-transform:uppercase;letter-spacing:2px;font-size:12px;margin-bottom:14px;}
+.date{color:var(--nilus-muted);font-size:14px;margin-bottom:18px;}
+h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
+.summary{font-size:23px;line-height:1.6;color:#36566A;margin-bottom:64px;}
+.content{font-size:20px;line-height:1.9;color:#17394C;}
+.back{display:inline-block;margin-top:80px;color:var(--nilus-blue);text-decoration:none;border-bottom:1px solid var(--nilus-lime);padding-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;}
+.loading{text-align:center;color:var(--nilus-muted);padding:80px 0;}
+@media(max-width:760px){.wrap{padding:48px 22px 80px}.logo{width:150px}h1{font-size:36px;letter-spacing:-0.4px}.summary{font-size:19px}.content{font-size:17px;line-height:1.8}}
+</style>
+</head>
+<body>
+<div class="top-line"></div>
+<main class="wrap">
+  <img src="assets/nilus-editorial-logo.png" alt="Nilus Consulting" class="logo">
+  <div id="article"><div class="loading">Loading article...</div></div>
+</main>
+<script>
+function formatDate(dateString){
+  if(!dateString) return '';
+  const d = new Date(dateString + 'T00:00:00');
+  return d.toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric'});
+}
+async function loadArticle(){
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('slug');
+  const container = document.getElementById('article');
+  if(!slug){
+    container.innerHTML = '<h1>Article not found</h1><a class="back" href="index.html#insights">Back to Insights</a>';
+    return;
+  }
+  try{
+    const res = await fetch('/.netlify/functions/notion-insights');
+    const data = await res.json();
+    const article = (data.articles || []).find(a => a.slug === slug);
+    if(!article){
+      container.innerHTML = '<h1>Article not found</h1><a class="back" href="index.html#insights">Back to Insights</a>';
+      return;
+    }
+    document.title = article.title + ' | Nilus Insights';
+    container.innerHTML = `
+      <div class="category">${article.category || ''}</div>
+      <div class="date">${formatDate(article.publishDate)}</div>
+      <h1>${article.title}</h1>
+      <div class="summary">${article.summary || ''}</div>
+      <div class="content">
+        <p>The full article body will be rendered here in the next enhancement. For now, this page displays the article title, category, publication date, and executive summary directly from Notion.</p>
+      </div>
+      <a class="back" href="index.html#insights">Back to Insights</a>
+    `;
+  } catch(e){
+    container.innerHTML = '<h1>Unable to load article</h1><a class="back" href="index.html#insights">Back to Insights</a>';
+  }
+}
+loadArticle();
+</script>
+</body>
+</html>
