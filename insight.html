@@ -11,7 +11,7 @@
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--nilus-blue);background:#fff;}
 .top-line{height:4px;background:var(--nilus-lime);}
 .wrap{max-width:900px;margin:0 auto;padding:72px 28px 110px;}
-.logo{display:block;width:180px;margin:0 auto 56px;}
+.logo{display:block;width:220px;margin:0 auto 56px;}
 .category{color:var(--nilus-lime);text-transform:uppercase;letter-spacing:2px;font-size:12px;margin-bottom:14px;}
 .date{color:var(--nilus-muted);font-size:14px;margin-bottom:18px;}
 h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
@@ -19,7 +19,18 @@ h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
 .content{font-size:20px;line-height:1.9;color:#17394C;}
 .back{display:inline-block;margin-top:80px;color:var(--nilus-blue);text-decoration:none;border-bottom:1px solid var(--nilus-lime);padding-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;}
 .loading{text-align:center;color:var(--nilus-muted);padding:80px 0;}
-@media(max-width:760px){.wrap{padding:48px 22px 80px}.logo{width:150px}h1{font-size:36px;letter-spacing:-0.4px}.summary{font-size:19px}.content{font-size:17px;line-height:1.8}}
+@media(max-width:760px){.wrap{padding:48px 22px 80px}.logo{width:190px}h1{font-size:36px;letter-spacing:-0.4px}.summary{font-size:19px}.content{font-size:17px;line-height:1.8}}
+
+#article-body {
+  margin-top: 3rem;
+  font-size: 1.15rem;
+  line-height: 1.9;
+  color: #17394C;
+}
+#article-body p {
+  margin-bottom: 1.5rem;
+}
+
 </style>
 </head>
 <body>
@@ -59,7 +70,7 @@ async function loadArticle(){
       <h1>${article.title}</h1>
       <div class="summary">${article.summary || ''}</div>
       <div class="content">
-        <p>The full article body will be rendered here in the next enhancement. For now, this page displays the article title, category, publication date, and executive summary directly from Notion.</p>
+        <div id="article-body"><p style="font-style: italic; color: #6b7280;">The full article body will appear here automatically once the Netlify function returns the complete content from Notion.</p></div>
       </div>
       <a class="back" href="index.html#insights">Back to Insights</a>
     `;
