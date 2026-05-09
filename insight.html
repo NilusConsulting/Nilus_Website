@@ -11,7 +11,7 @@
 body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--nilus-blue);background:#fff;}
 .top-line{height:4px;background:var(--nilus-lime);}
 .wrap{max-width:900px;margin:0 auto;padding:72px 28px 110px;}
-.logo{display:block;width:220px;margin:0 auto 56px;}
+.logo{display:block;width:220px;margin:0 0 56px 0;}
 .category{color:var(--nilus-lime);text-transform:uppercase;letter-spacing:2px;font-size:12px;margin-bottom:14px;}
 .date{color:var(--nilus-muted);font-size:14px;margin-bottom:18px;}
 h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
@@ -70,7 +70,7 @@ async function loadArticle(){
       <h1>${article.title}</h1>
       <div class="summary">${article.summary || ''}</div>
       <div class="content">
-        <div id="article-body"><p style="font-style: italic; color: #6b7280;"></p></div>
+        <div id="article-body">${article.content || article.body || article.html || '<p style="font-style: italic; color: #6b7280;">Full article content is not available.</p>'}</div>
       </div>
       <a class="back" href="index.html#insights">Back to Insights</a>
     `;
