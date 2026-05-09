@@ -18,7 +18,7 @@ h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
 .summary{font-size:23px;line-height:1.6;color:#36566A;margin-bottom:64px;}
 .content{font-size:20px;line-height:1.9;color:#17394C;}
 .back{display:inline-block;margin-top:80px;color:var(--nilus-blue);text-decoration:none;border-bottom:1px solid var(--nilus-lime);padding-bottom:6px;font-size:12px;text-transform:uppercase;letter-spacing:1.6px;}
-.loading{text-align:center;color:var(--nilus-muted);padding:80px 0;}
+.loading{text-align: left;color:var(--nilus-muted);padding:80px 0;}
 @media(max-width:760px){.wrap{padding:48px 22px 80px}.logo{width:190px}h1{font-size:36px;letter-spacing:-0.4px}.summary{font-size:19px}.content{font-size:17px;line-height:1.8}}
 
 #article-body {
@@ -70,7 +70,7 @@ async function loadArticle(){
       <h1>${article.title}</h1>
       <div class="summary">${article.summary || ''}</div>
       <div class="content">
-        <div id="article-body"><p style="font-style: italic; color: #6b7280;">The full article body will appear here automatically once the Netlify function returns the complete content from Notion.</p></div>
+        <div id="article-body"><p style="font-style: italic; color: #6b7280;"></p></div>
       </div>
       <a class="back" href="index.html#insights">Back to Insights</a>
     `;
