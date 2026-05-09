@@ -39,10 +39,12 @@ async function loadArticle(){
   const slug = params.get('slug');
   const container = document.getElementById('article');
   if(!slug){
-    container.innerHTML = '<h1>Article not found</h1><a class="back" href="index.html#insights">Back to Insights</a>';
+    container.innerHTML = '<h1>Article not found</h1><p>No slug parameter was provided in the URL.</p><a class="back" href="index.html#insights">Back to Insights</a>';
     return;
   }
-  try{
+  console.log('Loading slug:', slug);
+  
+    try{
     const res = await fetch('/.netlify/functions/notion-insights');
     const data = await res.json();
     const article = (data.articles || []).find(a => a.slug === slug);
