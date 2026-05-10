@@ -127,16 +127,40 @@ function getDbIdForLanguage(lang) {
 }
 
 async function getPublishedPages(lang) {
-  const dbId = getDbIdForLanguage(lang);
+  const normalized = String(lang || 'EN').toUpperCase();
+  const dbId = getDbIdForLanguage(normalized);
+
   if (!dbId) {
     throw new Error('Missing insights database environment variable');
   }
 
+  const filters = [
+    { property: 'Status', select: { equals: 'Published' } }
+  ];
+
+  // Critical fallback:
+  // If the Spanish-specific database variable is not configured, the code may
+  // fall back to the default database (often the English DB). In that case,
+  // explicitly filter by the Language property so only the correct language is returned.
+  const usingFallbackDatabase =
+    (normalized === 'ES' && !process.env.NILUS_INSIGHTS_ES_DB && !process.env.ES_DB_ID) ||
+    (normalized === 'EN' && !process.env.NILUS_INSIGHTS_EN_DB && !process.env.EN_DB_ID);
+
+  if (usingFallbackDatabase) {
+    filters.push({
+      property: 'Language',
+      select: { equals: normalized }
+    });
+  }
+
   const response = await notion.databases.query({
     database_id: dbId,
-    filter: { property: 'Status', select: { equals: 'Published' } },
+    filter: filters.length === 1
+      ? filters[0]
+      : { and: filters },
     sorts: [{ property: 'Publish Date', direction: 'descending' }]
   });
+
   return response.results;
 }
 
