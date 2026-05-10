@@ -1,12 +1,12 @@
 
 // Separate Notion databases by language.
-const NOTION_DATABASE_ID_EN = 'd70ca569e94b82538f53817a64694285';
-const NOTION_DATABASE_ID_ES = '35aca569e94b80a4821ad3d15b1819c9';
+const EN_DB = 'd70ca569e94b82538f53817a64694285';
+const ES_DB = '35aca569e94b80a4821ad3d15b1819c9';
 
 function getCurrentDatabaseId() {
   return getCurrentLanguage() === 'ES'
-    ? NOTION_DATABASE_ID_ES
-    : NOTION_DATABASE_ID_EN;
+    ? ES_DB
+    : EN_DB;
 }
 
 

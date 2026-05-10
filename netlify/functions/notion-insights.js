@@ -120,7 +120,7 @@ function pageToArticle(page, content = '') {
 
 async function getPublishedPages() {
   const response = await notion.databases.query({
-    database_id: process.env.NOTION_DATABASE_ID,
+    database_id: process.env.DB_ID,
     filter: { property: 'Status', select: { equals: 'Published' } },
     sorts: [{ property: 'Publish Date', direction: 'descending' }]
   });
