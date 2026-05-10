@@ -6,7 +6,7 @@ function getCurrentLanguage() {
     document.documentElement.lang ||
     'en';
 
-  return String(stored).toLowerCase().startsWith('es') ? 'ES' : 'EN';
+  return String(stored).toLowerCase().startsWith('es') ? 'es' : 'en';
 }
 
 function getUIText() {

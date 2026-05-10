@@ -51,7 +51,7 @@ h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
         localStorage.getItem('selectedLanguage') ||
         document.documentElement.lang ||
         'en';
-      return String(stored).toLowerCase().startsWith('es') ? 'ES' : 'EN';
+      return String(stored).toLowerCase().startsWith('es') ? 'es' : 'en';
     }
 
 function formatDate(dateString){
