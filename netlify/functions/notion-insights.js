@@ -134,30 +134,21 @@ async function getPublishedPages(lang) {
     throw new Error('Missing insights database environment variable');
   }
 
-  const filters = [
-    { property: 'Status', select: { equals: 'Published' } }
-  ];
-
-  // Critical fallback:
-  // If the Spanish-specific database variable is not configured, the code may
-  // fall back to the default database (often the English DB). In that case,
-  // explicitly filter by the Language property so only the correct language is returned.
-  const usingFallbackDatabase =
-    (normalized === 'ES' && !process.env.NILUS_INSIGHTS_ES_DB && !process.env.ES_DB_ID) ||
-    (normalized === 'EN' && !process.env.NILUS_INSIGHTS_EN_DB && !process.env.EN_DB_ID);
-
-  if (usingFallbackDatabase) {
-    filters.push({
-      property: 'Language',
-      select: { equals: normalized }
-    });
-  }
-
+  // Always filter by BOTH:
+  // 1. Status = Published
+  // 2. Language = EN or ES
+  //
+  // This guarantees that even if the Spanish database variable accidentally
+  // points to the English database (or vice versa), only the correct language
+  // entries will be returned.
   const response = await notion.databases.query({
     database_id: dbId,
-    filter: filters.length === 1
-      ? filters[0]
-      : { and: filters },
+    filter: {
+      and: [
+        { property: 'Status', select: { equals: 'Published' } },
+        { property: 'Language', select: { equals: normalized } }
+      ]
+    },
     sorts: [{ property: 'Publish Date', direction: 'descending' }]
   });
 
