@@ -45,6 +45,15 @@ h1{font-size:54px;line-height:1.08;margin:0 0 28px;letter-spacing:-1px;}
   <div id="article"><div class="loading">Loading article...</div></div>
 </main>
 <script>
+    function getCurrentLanguage() {
+      const stored =
+        localStorage.getItem('language') ||
+        localStorage.getItem('selectedLanguage') ||
+        document.documentElement.lang ||
+        'en';
+      return String(stored).toLowerCase().startsWith('es') ? 'ES' : 'EN';
+    }
+
 function formatDate(dateString){
   if(!dateString) return '';
   const d = new Date(dateString + 'T00:00:00');
@@ -61,7 +70,7 @@ async function loadArticle(){
   console.log('Loading slug:', slug);
   
     try{
-    const res = await fetch('/.netlify/functions/notion-insights?slug=' + encodeURIComponent(slug));
+    const res = await fetch('/.netlify/functions/notion-insights?slug=' + encodeURIComponent(slug) + '&lang=' + encodeURIComponent(getCurrentLanguage()));
     const data = await res.json();
     const article = data.article;
     if(!res.ok || !article){

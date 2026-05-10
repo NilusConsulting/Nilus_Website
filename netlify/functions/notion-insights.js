@@ -118,9 +118,22 @@ function pageToArticle(page, content = '') {
   };
 }
 
-async function getPublishedPages() {
+function getDbIdForLanguage(lang) {
+  const normalized = String(lang || 'EN').toUpperCase();
+  if (normalized === 'ES') {
+    return process.env.NILUS_INSIGHTS_ES_DB || process.env.ES_DB_ID || process.env.DB_ID;
+  }
+  return process.env.NILUS_INSIGHTS_EN_DB || process.env.EN_DB_ID || process.env.DB_ID;
+}
+
+async function getPublishedPages(lang) {
+  const dbId = getDbIdForLanguage(lang);
+  if (!dbId) {
+    throw new Error('Missing insights database environment variable');
+  }
+
   const response = await notion.databases.query({
-    database_id: process.env.DB_ID,
+    database_id: dbId,
     filter: { property: 'Status', select: { equals: 'Published' } },
     sorts: [{ property: 'Publish Date', direction: 'descending' }]
   });
@@ -130,7 +143,8 @@ async function getPublishedPages() {
 exports.handler = async function(event) {
   try {
     const slug = event.queryStringParameters?.slug || event.queryStringParameters?.id;
-    const pages = await getPublishedPages();
+    const lang = event.queryStringParameters?.lang || 'EN';
+    const pages = await getPublishedPages(lang);
 
     if (slug) {
       const page = pages.find(p => p.id.replace(/-/g, '') === slug.replace(/-/g, ''));

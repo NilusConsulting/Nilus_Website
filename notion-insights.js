@@ -1,15 +1,4 @@
 
-// Separate Notion databases by language.
-const EN_DB = 'd70ca569e94b82538f53817a64694285';
-const ES_DB = '35aca569e94b80a4821ad3d15b1819c9';
-
-function getCurrentDatabaseId() {
-  return getCurrentLanguage() === 'ES'
-    ? ES_DB
-    : EN_DB;
-}
-
-
 // Keep desktop and mobile language toggles visually synchronized.
 function updateLanguageToggleVisualState(lang) {
   const normalized = (lang || 'EN').toUpperCase();
@@ -74,7 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!heading) return;
 
   try {
-    const res = await fetch('/.netlify/functions/notion-insights');
+    const res = await fetch('/.netlify/functions/notion-insights?lang=' + encodeURIComponent(getCurrentLanguage()));
     if (!res.ok) return;
     const data = await res.json();
     const articles = (data.articles || []).slice(0, 3);
