@@ -1289,7 +1289,7 @@ copy:"© 2026 Nilus . Todos los derechos reservados."
 };
 
 /* ── STATE ── */
-let currentLang = 'en';
+let currentLang = (localStorage.getItem('language') || localStorage.getItem('selectedLanguage') || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
 let currentPage = 'home';
 const hiTags = [0,1,4,6,10];
 const pages = ['home','about','services','team','insights','contact'];
@@ -1342,7 +1342,10 @@ document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY 
 
 /* ── LANGUAGE ── */
 function setLang(lang) {
-currentLang = lang;
+currentLang = String(lang || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+localStorage.setItem('language', currentLang);
+localStorage.setItem('selectedLanguage', currentLang);
+document.documentElement.lang = currentLang;
 // toggle buttons
 ['','−mob'].forEach(s => {
 const en = document.getElementById('lang-en' + s);
@@ -1353,6 +1356,9 @@ es.classList.toggle('active', lang === 'es');
 });
 applyTranslations();
 renderDynamic();
+if (typeof renderInsights === 'function') {
+  renderInsights();
+}
 }
 
 /* ── APPLY STATIC TRANSLATIONS ── */
@@ -1489,12 +1495,7 @@ nlTags.innerHTML = t.insights.tags.map(tag => `
 // Insights: articles
 const articlesGrid = document.getElementById('articles-grid');
 if (articlesGrid) {
-articlesGrid.innerHTML = t.insights.articles.map(a => `
-<div class="article-card">
-<div class="article-cat">${a.cat}</div>
-<h3>${a.title}</h3>
-<div class="article-soon">${t.insights.comingSoon}</div>
-</div>`).join('');
+articlesGrid.innerHTML = `<div class="article-card"><div class="article-cat">${t.insights.latestEyebrow}</div><h3>${currentLang === 'es' ? 'Cargando perspectivas...' : 'Loading insights...'}</h3></div>`;
 }
 
 // Contact: area select
@@ -1627,4 +1628,4 @@ document.addEventListener('DOMContentLoaded', function () {
 <script src="notion-insights.js"></script>
 </body>
 </html>
-<!-- VERIFIED_DYNAMIC_INSIGHTS_FIX_APPLIED -->
+<!-- NILUS_LANGUAGE_REAL_FIX_APPLIED -->

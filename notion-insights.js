@@ -131,5 +131,8 @@ async function renderInsights() {
   }
 }
 
+window.renderInsights = renderInsights;
 document.addEventListener('DOMContentLoaded', renderInsights);
 window.addEventListener('storage', renderInsights);
+
+window.addEventListener('nilus-language-change', renderInsights);
