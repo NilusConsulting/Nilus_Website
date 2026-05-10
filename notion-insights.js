@@ -10,7 +10,7 @@ function getCurrentLanguage() {
 }
 
 function getUIText() {
-  if (getCurrentLanguage() === 'ES') {
+  if (getCurrentLanguage() === 'es') {
     return {
       heading: 'Perspectivas recientes',
       footer:
