@@ -61,11 +61,11 @@ async function loadArticle(){
   console.log('Loading slug:', slug);
   
     try{
-    const res = await fetch('/.netlify/functions/notion-insights');
+    const res = await fetch('/.netlify/functions/notion-insights?slug=' + encodeURIComponent(slug));
     const data = await res.json();
-    const article = (data.articles || []).find(a => a.slug === slug);
-    if(!article){
-      container.innerHTML = '<h1>Article not found</h1><a class="back" href="index.html#insights">Back to Insights</a>';
+    const article = data.article;
+    if(!res.ok || !article){
+      container.innerHTML = '<h1>Article not found</h1><p>The article could not be loaded from Notion.</p><a class="back" href="index.html#insights">Back to Insights</a>';
       return;
     }
     document.title = article.title + ' | Nilus Insights';
