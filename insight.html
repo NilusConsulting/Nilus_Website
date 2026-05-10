@@ -55,7 +55,7 @@ async function loadArticle(){
   const slug = params.get('slug');
   const container = document.getElementById('article');
   if(!slug){
-    container.innerHTML = '<h1>Article not found</h1><p>No slug parameter was provided in the URL.</p><a class="back" href="/#insights">Back to Insights</a>';
+    container.innerHTML = '<h1>Article not found</h1><p>No slug parameter was provided in the URL.</p><a class="back" href="/#insights-list">Back to Insights</a>';
     return;
   }
   console.log('Loading slug:', slug);
@@ -65,7 +65,7 @@ async function loadArticle(){
     const data = await res.json();
     const article = data.article;
     if(!res.ok || !article){
-      container.innerHTML = '<h1>Article not found</h1><p>The article could not be loaded from Notion.</p><a class="back" href="/#insights">Back to Insights</a>';
+      container.innerHTML = '<h1>Article not found</h1><p>The article could not be loaded from Notion.</p><a class="back" href="/#insights-list">Back to Insights</a>';
       return;
     }
     document.title = article.title + ' | Nilus Insights';
@@ -77,10 +77,10 @@ async function loadArticle(){
       <div class="content">
         <div id="article-body">${article.content || article.body || article.html || '<p style="font-style: italic; color: #6b7280;">Full article content is not available.</p>'}</div>
       </div>
-      <a class="back" href="/#insights">Back to Insights</a>
+      <a class="back" href="/#insights-list">Back to Insights</a>
     `;
   } catch(e){
-    container.innerHTML = '<h1>Unable to load article</h1><a class="back" href="/#insights">Back to Insights</a>';
+    container.innerHTML = '<h1>Unable to load article</h1><a class="back" href="/#insights-list">Back to Insights</a>';
   }
 }
 loadArticle();

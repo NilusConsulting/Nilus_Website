@@ -915,7 +915,7 @@ INSIGHTS PAGE
 </div>
 </section>
 
-<section class="articles-section">
+<section class="articles-section" id="insights-list">
 <div class="eyebrow dark" data-i18n="insights.latestEyebrow">Latest</div>
 <h2 class="h2 navy" data-i18n="insights.latestTitle">Recent Insights</h2>
 <div class="articles-grid" id="articles-grid"><!-- filled by JS --></div>
@@ -1527,6 +1527,29 @@ document.getElementById('form-success').classList.add('visible');
 /* ── INIT ── */
 applyTranslations();
 renderDynamic();
+
+function handleInitialHash() {
+  const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+
+  if (hash === 'insights' || hash === 'insights-list') {
+    goTo('insights');
+
+    if (hash === 'insights-list') {
+      setTimeout(() => {
+        const target = document.getElementById('insights-list');
+        if (target) {
+          const navOffset = 95;
+          const y = target.getBoundingClientRect().top + window.pageYOffset - navOffset;
+          window.scrollTo({ top: y, behavior: 'auto' });
+        }
+      }, 150);
+    }
+  }
+}
+
+handleInitialHash();
+
+window.addEventListener('hashchange', handleInitialHash);
 
 </script>
 
