@@ -38,29 +38,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Detect current language from active language toggle, URL or html lang.
 function getCurrentLanguage() {
-  // 1. Active language toggle/button
-  const activeLang =
-    document.querySelector('.lang-toggle .active') ||
-    document.querySelector('.language-toggle .active') ||
-    document.querySelector('[data-lang].active');
+  const stored =
+    localStorage.getItem('language') ||
+    localStorage.getItem('selectedLanguage') ||
+    'en';
 
-  if (activeLang) {
-    const text = activeLang.textContent.trim().toUpperCase();
-    if (text === 'ES' || text === 'EN') {
-      return text;
-    }
-  }
-
-  // 2. URL fallback
-  const path = window.location.pathname.toLowerCase();
-  if (path.includes('/es/') || path === '/es') return 'ES';
-  if (path.includes('/en/') || path === '/en') return 'EN';
-
-  // 3. HTML lang fallback
-  const htmlLang = (document.documentElement.lang || '').toLowerCase();
-  if (htmlLang.startsWith('es')) return 'ES';
-
-  return 'EN';
+  return String(stored).toLowerCase().startsWith('es') ? 'ES' : 'EN';
 }
 
 function pageMatchesLanguage(page) {
