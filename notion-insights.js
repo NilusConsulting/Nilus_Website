@@ -1,17 +1,68 @@
 
-// Detect current site language from URL (/es/, /en/) or <html lang>.
-function getCurrentLanguage() {
-  const path = window.location.pathname.toLowerCase();
-  const htmlLang = (document.documentElement.lang || '').toLowerCase();
+// Keep desktop and mobile language toggles visually synchronized.
+function updateLanguageToggleVisualState(lang) {
+  const normalized = (lang || 'EN').toUpperCase();
 
-  if (path.includes('/es/') || path === '/es' || htmlLang.startsWith('es')) {
-    return 'ES';
+  // Clear active state from all language buttons.
+  document.querySelectorAll('.lang-toggle button, .language-toggle button, [data-lang]').forEach(el => {
+    el.classList.remove('active');
+    if (el.parentElement &&
+        (el.parentElement.classList.contains('lang-toggle') ||
+         el.parentElement.classList.contains('language-toggle'))) {
+      el.setAttribute('aria-pressed', 'false');
+    }
+  });
+
+  // Activate matching buttons (desktop and mobile).
+  document.querySelectorAll('[data-lang], .lang-toggle button, .language-toggle button').forEach(el => {
+    const value = (el.getAttribute('data-lang') || el.textContent || '').trim().toUpperCase();
+    if (value === normalized) {
+      el.classList.add('active');
+      el.setAttribute('aria-pressed', 'true');
+    }
+  });
+}
+
+// On page load, synchronize toggles with stored language.
+document.addEventListener('DOMContentLoaded', function() {
+  const storedLang =
+    localStorage.getItem('language') ||
+    localStorage.getItem('selectedLanguage') ||
+    document.documentElement.lang ||
+    'en';
+
+  updateLanguageToggleVisualState(storedLang);
+});
+
+
+
+// Detect current language from active language toggle, URL or html lang.
+function getCurrentLanguage() {
+  // 1. Active language toggle/button
+  const activeLang =
+    document.querySelector('.lang-toggle .active') ||
+    document.querySelector('.language-toggle .active') ||
+    document.querySelector('[data-lang].active');
+
+  if (activeLang) {
+    const text = activeLang.textContent.trim().toUpperCase();
+    if (text === 'ES' || text === 'EN') {
+      return text;
+    }
   }
+
+  // 2. URL fallback
+  const path = window.location.pathname.toLowerCase();
+  if (path.includes('/es/') || path === '/es') return 'ES';
+  if (path.includes('/en/') || path === '/en') return 'EN';
+
+  // 3. HTML lang fallback
+  const htmlLang = (document.documentElement.lang || '').toLowerCase();
+  if (htmlLang.startsWith('es')) return 'ES';
+
   return 'EN';
 }
 
-// Returns true if a Notion page matches the current language.
-// If the Language property is missing, the page is shown by default.
 function pageMatchesLanguage(page) {
   const currentLanguage = getCurrentLanguage();
   const prop = page.properties && page.properties.Language;
