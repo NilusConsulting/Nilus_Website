@@ -1,3 +1,28 @@
+
+// Detect current site language from URL (/es/, /en/) or <html lang>.
+function getCurrentLanguage() {
+  const path = window.location.pathname.toLowerCase();
+  const htmlLang = (document.documentElement.lang || '').toLowerCase();
+
+  if (path.includes('/es/') || path === '/es' || htmlLang.startsWith('es')) {
+    return 'ES';
+  }
+  return 'EN';
+}
+
+// Returns true if a Notion page matches the current language.
+// If the Language property is missing, the page is shown by default.
+function pageMatchesLanguage(page) {
+  const currentLanguage = getCurrentLanguage();
+  const prop = page.properties && page.properties.Language;
+
+  if (!prop || !prop.select || !prop.select.name) {
+    return true;
+  }
+
+  return prop.select.name.toUpperCase() === currentLanguage;
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const heading = Array.from(document.querySelectorAll('h1,h2,h3'))
     .find(el => el.textContent.trim().toLowerCase() === 'recent insights');
