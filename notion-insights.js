@@ -5,81 +5,116 @@ function getCurrentLanguage() {
     localStorage.getItem('selectedLanguage') ||
     document.documentElement.lang ||
     'en';
+
   return String(stored).toLowerCase().startsWith('es') ? 'ES' : 'EN';
 }
 
-function getUiText() {
-  return getCurrentLanguage() === 'ES'
-    ? {
-        eyebrow: 'ÚLTIMOS',
-        heading: 'Perspectivas recientes',
-        footer: 'Las perspectivas se actualizan periódicamente para reflejar desarrollos en infraestructura, finanzas de proyectos y asesoría estratégica en América Latina.',
-        loading: 'Cargando perspectivas...',
-        empty: 'Todavía no hay perspectivas publicadas.',
-        error: 'No se pudieron cargar las perspectivas.'
-      }
-    : {
-        eyebrow: 'LATEST',
-        heading: 'Recent Insights',
-        footer: 'Insights are updated periodically to reflect developments in infrastructure, project finance and strategic advisory across Latin America.',
-        loading: 'Loading insights...',
-        empty: 'No published insights yet.',
-        error: 'Unable to load insights.'
-      };
+function getUIText() {
+  if (getCurrentLanguage() === 'ES') {
+    return {
+      heading: 'Perspectivas recientes',
+      footer:
+        'Las perspectivas se actualizan periódicamente para reflejar desarrollos en infraestructura, finanzas de proyectos y asesoría estratégica en América Latina.',
+      loading: 'Cargando perspectivas...',
+      empty: 'Todavía no hay perspectivas publicadas.',
+      error: 'No se pudieron cargar las perspectivas.'
+    };
+  }
+
+  return {
+    heading: 'Recent Insights',
+    footer:
+      'Insights are updated periodically to reflect developments in infrastructure, project finance and strategic advisory across Latin America.',
+    loading: 'Loading insights...',
+    empty: 'No published insights yet.',
+    error: 'Unable to load insights.'
+  };
 }
 
-function articleCard(a) {
-  const category = (a.category || '').toUpperCase();
-  const title = a.title || '';
-  const summary = a.summary || '';
-  const slug = a.slug || a.id || '';
+function createArticleCard(article) {
+  const category = (article.category || '').toUpperCase();
+  const title = article.title || '';
+  const summary = article.summary || '';
+  const slug = article.slug || article.id || '';
 
   return `
-    <a href="insight.html?slug=${encodeURIComponent(slug)}" style="text-decoration:none;color:inherit;display:block;">
+    <a href="insight.html?slug=${encodeURIComponent(slug)}"
+       style="text-decoration:none;color:inherit;display:block;">
       <div style="border-top:2px solid #c7d300;padding-top:24px;">
-        <div style="font-size:12px;letter-spacing:2px;color:#c7d300;margin-bottom:12px;text-transform:uppercase;">${category}</div>
-        <div style="font-weight:700;font-size:20px;line-height:1.35;margin-bottom:12px;">${title}</div>
-        <div style="font-size:14px;line-height:1.6;color:#5f6b7a;">${summary}</div>
+        <div style="font-size:12px;letter-spacing:2px;color:#c7d300;margin-bottom:12px;text-transform:uppercase;">
+          ${category}
+        </div>
+        <div style="font-weight:700;font-size:20px;line-height:1.35;margin-bottom:12px;">
+          ${title}
+        </div>
+        <div style="font-size:14px;line-height:1.6;color:#5f6b7a;">
+          ${summary}
+        </div>
       </div>
     </a>
   `;
 }
 
-async function renderNotionInsights() {
-  const mount = document.getElementById('notion-insights-mount');
-  if (!mount) return;
+function findInsightsSection() {
+  const headings = Array.from(document.querySelectorAll('h1, h2, h3'));
 
-  const ui = getUiText();
-  mount.innerHTML = `<div style="padding:48px 0;text-align:center;color:#4f5d6b;">${ui.loading}</div>`;
+  return headings.find((el) => {
+    const text = el.textContent.trim().toLowerCase();
+    return (
+      text === 'recent insights' ||
+      text === 'perspectivas recientes'
+    );
+  })?.closest('section') || headings.find((el) => {
+    const text = el.textContent.trim().toLowerCase();
+    return text === 'recent insights' || text === 'perspectivas recientes';
+  })?.parentElement;
+}
+
+async function renderInsights() {
+  const section = findInsightsSection();
+  if (!section) return;
+
+  const ui = getUIText();
+
+  section.innerHTML = `
+    <div style="padding:48px 0;text-align:center;color:#4f5d6b;">
+      ${ui.loading}
+    </div>
+  `;
 
   try {
     const lang = getCurrentLanguage();
-    const res = await fetch('/.netlify/functions/notion-insights?lang=' + encodeURIComponent(lang), {
-      cache: 'no-store'
-    });
+    const response = await fetch(
+      '/.netlify/functions/notion-insights?lang=' + encodeURIComponent(lang),
+      { cache: 'no-store' }
+    );
 
-    if (!res.ok) {
-      throw new Error('HTTP ' + res.status);
+    if (!response.ok) {
+      throw new Error('HTTP ' + response.status);
     }
 
-    const data = await res.json();
+    const data = await response.json();
     const articles = (data.articles || []).slice(0, 3);
 
     if (!articles.length) {
-      mount.innerHTML = `<div style="padding:48px 0;text-align:center;color:#4f5d6b;">${ui.empty}</div>`;
+      section.innerHTML = `
+        <div style="padding:48px 0;text-align:center;color:#4f5d6b;">
+          ${ui.empty}
+        </div>
+      `;
       return;
     }
 
-    mount.innerHTML = `
+    section.innerHTML = `
       <div style="margin-bottom:44px;">
-        <div style="font-size:12px;letter-spacing:3px;color:#9aa6b2;text-transform:uppercase;margin-bottom:14px;">
-          — ${ui.eyebrow}
-        </div>
-        <h2 style="font-size:36px;line-height:1.15;margin:0;color:#001b2e;">${ui.heading}</h2>
+        <h2 style="font-size:36px;line-height:1.15;margin:0;color:#001b2e;">
+          ${ui.heading}
+        </h2>
       </div>
 
-      <div class="notion-insights-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;">
-        ${articles.map(articleCard).join('')}
+      <div class="notion-insights-grid"
+           style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:40px;">
+        ${articles.map(createArticleCard).join('')}
       </div>
 
       <div style="margin-top:48px;padding:40px;background:#f4f4ef;text-align:center;color:#4f5d6b;">
@@ -87,10 +122,14 @@ async function renderNotionInsights() {
       </div>
     `;
   } catch (error) {
-    console.error('Notion insights error:', error);
-    mount.innerHTML = `<div style="padding:48px 0;text-align:center;color:#4f5d6b;">${ui.error}</div>`;
+    console.error('Error loading insights:', error);
+    section.innerHTML = `
+      <div style="padding:48px 0;text-align:center;color:#4f5d6b;">
+        ${ui.error}
+      </div>
+    `;
   }
 }
 
-document.addEventListener('DOMContentLoaded', renderNotionInsights);
-window.addEventListener('storage', renderNotionInsights);
+document.addEventListener('DOMContentLoaded', renderInsights);
+window.addEventListener('storage', renderInsights);
