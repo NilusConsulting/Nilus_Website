@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (html.toLowerCase().includes('coming soon')) {
       section.innerHTML = html.replace(/<div[\s\S]*?Insights are updated periodically[\s\S]*?<\/div>/i, grid);
     }
+    section.innerHTML = grid;
   } catch (e) {
     console.error(e);
   }
